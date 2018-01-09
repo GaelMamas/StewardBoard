@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">StewardBoard</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="generic_input_field_hint">Entrer la valeur</string>
+    <string name="specific_input_field_hint">Quel vaut %s?</string>
+    <string name="invoice_output">%1$s a coûté %2$s€</string>
+    <string name="generic_input_adding">Ajouter une entrée dans la liste</string>
+</resources>
