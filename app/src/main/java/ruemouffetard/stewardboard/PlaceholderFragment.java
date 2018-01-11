@@ -6,7 +6,6 @@ package ruemouffetard.stewardboard;
 
 import android.Manifest;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -14,7 +13,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,37 +20,31 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
-import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.ValueRange;
 
-import java.io.IOException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -69,7 +61,7 @@ import static android.view.View.VISIBLE;
  */
 public class PlaceholderFragment extends Fragment implements TextView.OnEditorActionListener, EasyPermissions.PermissionCallbacks {
 
-    GoogleAccountCredential mCredential;
+    GoogleAccountCredential mCredential, mCredentialDrive;
     ProgressDialog mProgress;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
@@ -79,8 +71,11 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
 
     private static final String BUTTON_TEXT = "Call Drive API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { DriveScopes.DRIVE_METADATA_READONLY };
+    private static final String[] SCOPES = {DriveScopes.DRIVE_METADATA_READONLY};
     private static final String[] SCOPES_SHEETS = {SheetsScopes.SPREADSHEETS_READONLY};
+
+    JSONArray userGoogleSheetFiles = new JSONArray();
+    String spreadsheetId;
 
 
     private static final String ARG_SECTION_NUMBER = "section_number";
@@ -144,8 +139,31 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                hideShowInputView(addInputEditText.getVisibility() == View.GONE);
+                //hideShowInputView(addInputEditText.getVisibility() == View.GONE);
 
+                getResultsFromApi();
+            }
+        });
+
+        actionButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+
+                new MakeDriveAPIRequestTask(mCredential, getActivity(), userGoogleSheetFiles).execute();
+
+                for (int i = 0; i < userGoogleSheetFiles.length(); i++) {
+
+                    try {
+                        if(((JSONObject)(userGoogleSheetFiles.get(i))).get("name").equals("Test Stewardship")){
+                            spreadsheetId = (String) ((JSONObject)(userGoogleSheetFiles.get(i))).get("id");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                return false;
             }
         });
 
@@ -158,6 +176,11 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
                 getActivity().getApplicationContext(), Arrays.asList(SCOPES_SHEETS))
                 .setBackOff(new ExponentialBackOff());
 
+        mCredentialDrive = GoogleAccountCredential.usingOAuth2(
+                //SCOPES_SHEETS OR SCOPES_DRIVE
+                getActivity().getApplicationContext(), Arrays.asList(SCOPES))
+                .setBackOff(new ExponentialBackOff());
+
         return rootView;
     }
 
@@ -167,7 +190,7 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
         super.onActivityCreated(savedInstanceState);
 
 
-        getResultsFromApi();
+        //getResultsFromApi();
 
     }
 
@@ -219,20 +242,15 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
     }
 
 
-
-
-
-
-
     private void getResultsFromApi() {
-        if (! isGooglePlayServicesAvailable()) {
+        if (!isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices();
         } else if (mCredential.getSelectedAccountName() == null) {
             chooseAccount();
-        } else if (! isDeviceOnline()) {
+        } else if (!isDeviceOnline()) {
             Toast.makeText(getContext(), "No network connection available.", Toast.LENGTH_SHORT).show();
         } else {
-            new MakeSheetsAPIRequestTask(mCredential, getActivity(), inputList, mProgress, null, null).execute();
+            new MakeSheetsAPIRequestTask(mCredential, getActivity(), inputList, mProgress, spreadsheetId, "Test Consommation!A1:C1").execute();
         }
     }
 
@@ -275,17 +293,18 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
      * Called when an activity launched here (specifically, AccountPicker
      * and authorization) exits, giving you the requestCode you started it with,
      * the resultCode it returned, and any additional data from it.
+     *
      * @param requestCode code indicating which activity result is incoming.
-     * @param resultCode code indicating the result of the incoming
-     *     activity result.
-     * @param data Intent (containing result data) returned by incoming
-     *     activity result.
+     * @param resultCode  code indicating the result of the incoming
+     *                    activity result.
+     * @param data        Intent (containing result data) returned by incoming
+     *                    activity result.
      */
     @Override
     public void onActivityResult(
             int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode) {
+        switch (requestCode) {
             case REQUEST_GOOGLE_PLAY_SERVICES:
                 if (resultCode != RESULT_OK) {
                     /*mOutputText.setText(
@@ -326,11 +345,12 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
 
     /**
      * Respond to requests for permissions at runtime for API 23 and above.
-     * @param requestCode The request code passed in
-     *     requestPermissions(android.app.Activity, String, int, String[])
-     * @param permissions The requested permissions. Never null.
+     *
+     * @param requestCode  The request code passed in
+     *                     requestPermissions(android.app.Activity, String, int, String[])
+     * @param permissions  The requested permissions. Never null.
      * @param grantResults The grant results for the corresponding permissions
-     *     which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
+     *                     which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
      */
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -344,9 +364,10 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
     /**
      * Callback for when a permission is granted using the EasyPermissions
      * library.
+     *
      * @param requestCode The request code associated with the requested
-     *         permission
-     * @param list The requested permission list. Never null.
+     *                    permission
+     * @param list        The requested permission list. Never null.
      */
     @Override
     public void onPermissionsGranted(int requestCode, List<String> list) {
@@ -356,9 +377,10 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
     /**
      * Callback for when a permission is denied using the EasyPermissions
      * library.
+     *
      * @param requestCode The request code associated with the requested
-     *         permission
-     * @param list The requested permission list. Never null.
+     *                    permission
+     * @param list        The requested permission list. Never null.
      */
     @Override
     public void onPermissionsDenied(int requestCode, List<String> list) {
@@ -367,6 +389,7 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
 
     /**
      * Checks whether the device currently has a network connection.
+     *
      * @return true if the device has a network connection, false otherwise.
      */
     private boolean isDeviceOnline() {
@@ -381,8 +404,9 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
 
     /**
      * Check that Google Play services APK is installed and up to date.
+     *
      * @return true if Google Play Services is available and up to
-     *     date on this device; false otherwise.
+     * date on this device; false otherwise.
      */
     private boolean isGooglePlayServicesAvailable() {
         GoogleApiAvailability apiAvailability =
@@ -410,8 +434,9 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
     /**
      * Display an error dialog showing that Google Play Services is missing
      * or out of date.
+     *
      * @param connectionStatusCode code describing the presence (or lack of)
-     *     Google Play Services on this device.
+     *                             Google Play Services on this device.
      */
     void showGooglePlayServicesAvailabilityErrorDialog(
             final int connectionStatusCode) {

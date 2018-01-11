@@ -1,5 +1,6 @@
 package ruemouffetard.stewardboard;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -7,6 +8,7 @@ import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -19,6 +21,10 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +33,7 @@ import java.util.List;
  * Created by user on 15/09/2017.
  */
 
-public class MakeDriveAPIRequestTask extends AsyncTask<Void, Void, List<String>> {
+public class MakeDriveAPIRequestTask extends AsyncTask<Void, Void, JSONArray> {
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -38,10 +44,9 @@ public class MakeDriveAPIRequestTask extends AsyncTask<Void, Void, List<String>>
     private Exception mLastError = null;
 
     private Activity activity;
-    private TextView mOutputText;
-    private ProgressDialog mProgress;
+    private JSONArray jsonArray;
 
-    MakeDriveAPIRequestTask(GoogleAccountCredential credential, Activity activity, TextView mOutputText, ProgressDialog mProgress) {
+    MakeDriveAPIRequestTask(GoogleAccountCredential credential, Activity activity, JSONArray data) {
         HttpTransport transport = AndroidHttp.newCompatibleTransport();
         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
         this.mService = new com.google.api.services.drive.Drive.Builder(
@@ -50,8 +55,7 @@ public class MakeDriveAPIRequestTask extends AsyncTask<Void, Void, List<String>>
                 .build();
 
         this.activity = activity;
-        this.mOutputText = mOutputText;
-        this.mProgress = mProgress;
+        this.jsonArray = data;
 
     }
 
@@ -60,7 +64,7 @@ public class MakeDriveAPIRequestTask extends AsyncTask<Void, Void, List<String>>
      * @param params no parameters needed for this task.
      */
     @Override
-    protected List<String> doInBackground(Void... params) {
+    protected JSONArray doInBackground(Void... params) {
         try {
             return getDataFromApi();
         } catch (Exception e) {
@@ -76,9 +80,11 @@ public class MakeDriveAPIRequestTask extends AsyncTask<Void, Void, List<String>>
      *         found.
      * @throws IOException
      */
-    private List<String> getDataFromApi() throws IOException {
+    private JSONArray getDataFromApi() throws IOException {
         // Get a list of up to 10 files.
-        List<String> fileInfo = new ArrayList<String>();
+        //List<String> fileInfo = new ArrayList<String>();
+        JSONArray jsonArray = new JSONArray();
+
         FileList result = mService.files().list()
                 .setPageSize(10)
                 .setFields("nextPageToken, files(id, name)")
@@ -87,38 +93,43 @@ public class MakeDriveAPIRequestTask extends AsyncTask<Void, Void, List<String>>
         if (files != null) {
             for (File file : files) {
 
-                if(file.getName().contains("Comptabilité mensuelle")){
+                /*if(file.getName().contains("Comptabilité mensuelle")){
                     Log.d(this.getClass().getSimpleName(), ""+file.getId());
                 }
 
                 fileInfo.add(String.format("%s (%s)\n",
-                        file.getName(), file.getId()));
+                        file.getName(), file.getId()));*/
+
+                try {
+                    jsonArray.put(new JSONObject().put("name", file.getName())
+                            .put("id", file.getId()));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
         }
-        return fileInfo;
+        return jsonArray;
     }
 
 
     @Override
     protected void onPreExecute() {
-        mOutputText.setText("");
-        mProgress.show();
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
-    protected void onPostExecute(List<String> output) {
-        mProgress.hide();
-        if (output == null || output.size() == 0) {
-            mOutputText.setText("No results returned.");
+    protected void onPostExecute(JSONArray output) {
+        if (output == null || output.length() == 0) {
+            Toast.makeText(activity, "User does have Google Sheet File", Toast.LENGTH_SHORT).show();
         } else {
-            output.add(0, "Data retrieved using the Drive API:");
-            mOutputText.setText(TextUtils.join("\n", output));
+            this.jsonArray = jsonArray;
         }
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCancelled() {
-        mProgress.hide();
         if (mLastError != null) {
             if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
                 showGooglePlayServicesAvailabilityErrorDialog(
@@ -129,11 +140,11 @@ public class MakeDriveAPIRequestTask extends AsyncTask<Void, Void, List<String>>
                         ((UserRecoverableAuthIOException) mLastError).getIntent(),
                         PlaceholderFragment.REQUEST_AUTHORIZATION);
             } else {
-                mOutputText.setText("The following error occurred:\n"
-                        + mLastError.getMessage());
+               // mOutputText.setText("The following error occurred:\n"
+                 //       + mLastError.getMessage());
             }
         } else {
-            mOutputText.setText("Request cancelled.");
+            //mOutputText.setText("Request cancelled.");
         }
     }
 
