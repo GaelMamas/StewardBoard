@@ -88,7 +88,20 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+
+            switch (position) {
+                case 3:
+                    return ExpensesDetailsFragment.newInstance(position + 1);
+
+                case 0:
+                case 1:
+                case 2:
+                default:
+                    return PlaceholderFragment.newInstance(position + 1);
+
+
+            }
+
         }
 
         @Override
@@ -106,6 +119,8 @@ public class MainActivity extends AppCompatActivity {
                     return "SECTION 2";
                 case 2:
                     return "SECTION 3";
+                case 3:
+                    return "SECTION 4";
             }
             return null;
         }
