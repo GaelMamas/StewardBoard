@@ -65,7 +65,8 @@ public class MakeDriveAPIRequestTask extends AsyncTask<Void, Void, JSONArray> {
      */
     @Override
     protected JSONArray doInBackground(Void... params) {
-        try {
+        try{
+
             return getDataFromApi();
         } catch (Exception e) {
             mLastError = e;
@@ -93,11 +94,11 @@ public class MakeDriveAPIRequestTask extends AsyncTask<Void, Void, JSONArray> {
         if (files != null) {
             for (File file : files) {
 
-                /*if(file.getName().contains("Comptabilité mensuelle")){
+                if(file.getName().contains("Test Stewardship")){
                     Log.d(this.getClass().getSimpleName(), ""+file.getId());
                 }
 
-                fileInfo.add(String.format("%s (%s)\n",
+                /*fileInfo.add(String.format("%s (%s)\n",
                         file.getName(), file.getId()));*/
 
                 try {

@@ -23,12 +23,14 @@ public class MainActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
 
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
+
 
     private ViewPager mViewPager;
 
@@ -78,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
      * one of the sections/tabs/pages.
      */
 
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -126,3 +129,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+

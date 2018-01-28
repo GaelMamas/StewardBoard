@@ -69,10 +69,9 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
-    private static final String BUTTON_TEXT = "Call Drive API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = {DriveScopes.DRIVE_METADATA_READONLY};
-    private static final String[] SCOPES_SHEETS = {SheetsScopes.SPREADSHEETS_READONLY};
+    private static final String[] SCOPES_SHEETS = {SheetsScopes.SPREADSHEETS};
 
     JSONArray userGoogleSheetFiles = new JSONArray();
     String spreadsheetId;
@@ -149,7 +148,7 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
             @Override
             public boolean onLongClick(View view) {
 
-                new MakeDriveAPIRequestTask(mCredential, getActivity(), userGoogleSheetFiles).execute();
+                new MakeDriveAPIRequestTask(mCredentialDrive, getActivity(), userGoogleSheetFiles).execute();
 
                 for (int i = 0; i < userGoogleSheetFiles.length(); i++) {
 
@@ -250,7 +249,8 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
         } else if (!isDeviceOnline()) {
             Toast.makeText(getContext(), "No network connection available.", Toast.LENGTH_SHORT).show();
         } else {
-            new MakeSheetsAPIRequestTask(mCredential, getActivity(), inputList, mProgress, spreadsheetId, "Test Consommation!A1:C1").execute();
+            new MakeSheetsAPIRequestTask(mCredential, getActivity(),
+                    inputList, mProgress, spreadsheetId, "Test!A1:C1", 0).execute();
         }
     }
 
