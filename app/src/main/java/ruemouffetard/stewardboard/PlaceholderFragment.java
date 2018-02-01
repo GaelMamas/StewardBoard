@@ -59,7 +59,8 @@ import static android.view.View.VISIBLE;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class PlaceholderFragment extends Fragment implements TextView.OnEditorActionListener, EasyPermissions.PermissionCallbacks {
+public class PlaceholderFragment extends Fragment
+        implements TextView.OnEditorActionListener, EasyPermissions.PermissionCallbacks, View.OnClickListener {
 
     GoogleAccountCredential mCredential, mCredentialDrive;
     ProgressDialog mProgress;
@@ -109,6 +110,11 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
         spinner = (AppCompatSpinner) rootView.findViewById(R.id.spinner);
         editText = (AppCompatEditText) rootView.findViewById(R.id.edittext);
         addInputEditText = (AppCompatEditText) rootView.findViewById(R.id.edittext_add_input);
+
+        rootView.findViewById(R.id.button_0).setOnClickListener(this);
+        rootView.findViewById(R.id.button_1).setOnClickListener(this);
+        rootView.findViewById(R.id.button_2).setOnClickListener(this);
+        rootView.findViewById(R.id.button_3).setOnClickListener(this);
 
 
         /*inputList.add("Coures alimentaires");
@@ -250,7 +256,7 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
             Toast.makeText(getContext(), "No network connection available.", Toast.LENGTH_SHORT).show();
         } else {
             new MakeSheetsAPIRequestTask(mCredential, getActivity(),
-                    inputList, mProgress, spreadsheetId, "Test!A1:C1", 0).execute();
+                    inputList, spreadsheetId, "Test!A1:C1", 0).execute();
         }
     }
 
@@ -448,4 +454,30 @@ public class PlaceholderFragment extends Fragment implements TextView.OnEditorAc
         dialog.show();
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+
+            case R.id.button_0:
+
+                new MakeSheetsAPIRequestTask(mCredential, getActivity(),
+                        inputList, spreadsheetId, "Test!A1:C1", 0).execute();
+
+            case R.id.button_1:
+
+                new MakeSheetsAPIRequestTask(mCredential, getActivity(),
+                        inputList, spreadsheetId, "Test!A1:C1", 1).execute();
+
+            case R.id.button_2:
+
+                new MakeSheetsAPIRequestTask(mCredential, getActivity(),
+                        inputList, spreadsheetId, "Test!A1:C1", 2).execute();
+
+            case R.id.button_3:
+
+                new MakeSheetsAPIRequestTask(mCredential, getActivity(),
+                        inputList, spreadsheetId, "Test!A1:C1", 3).execute();
+
+        }
+    }
 }
