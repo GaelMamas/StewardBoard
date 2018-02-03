@@ -12,7 +12,9 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.GenericJson;
 import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.JsonParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.AppendCellsRequest;
@@ -37,7 +39,7 @@ import java.util.List;
 
 public class MakeSheetsAPIRequestTask extends AsyncTask<Void, Void, List<String>> {
 
-    private static final int GET_TYPE = 0, GET_MULTI_TYPE = 1,
+    public static final int GET_TYPE = 0, GET_MULTI_TYPE = 1,
                 PUT_TYPE = 2, PUT_MULTI_TYPE = 3, APPEND_TYPE = 4;
 
     private com.google.api.services.sheets.v4.Sheets mService = null;
@@ -98,21 +100,17 @@ public class MakeSheetsAPIRequestTask extends AsyncTask<Void, Void, List<String>
 
     private List<String> transactDataWithApi() throws IOException, JSONException {
 
-        List<String> results = new ArrayList<String>();
-
         Sheets.Spreadsheets.Values spreadsheet = this.mService.spreadsheets().values();
         spreadSheetId = TextUtils.isEmpty(spreadSheetId) ? "1TQFsCpcmBixrkC9hBo9ri_DsxvbbwLa33YLcE1PN7OU" : spreadSheetId;
         range = TextUtils.isEmpty(range) ? "Test!A1:C1" : range;
 
-        ValueRange response;
+
         switch (spreadsheetRequestType){
 
 
             case PUT_TYPE:
 
-                JSONArray jsonArray = new JSONArray("{\n" +
-                        "  \"range\": \"Test!A1:D5\",\n" +
-                        "  \"majorDimension\": \"ROWS\",\n" +
+                JSONObject jsonObject = new JSONObject("{\n" +
                         "  \"values\": [\n" +
                         "    [\"Item\", \"Cost\", \"Stocked\", \"Ship Date\"],\n" +
                         "    [\"Wheel\", \"$20.50\", \"4\", \"3/1/2016\"],\n" +
@@ -122,23 +120,31 @@ public class MakeSheetsAPIRequestTask extends AsyncTask<Void, Void, List<String>
                         "  ],\n" +
                         "}");
 
-                List<Object> valuesItem = new ArrayList<>();
+                JSONArray jsonArray = jsonObject.getJSONArray("values");
+
+                List<List<Object>> values = new ArrayList<>();
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    valuesItem.add(jsonArray.get(i));
+                    JSONArray jsonArray1 = (JSONArray) jsonArray.get(i);
+                    List<Object> subList = new ArrayList();
+                    if(jsonArray1 != null){
+                        for (int j = 0; j < jsonArray1.length(); j++) {
+                            subList.add(jsonArray1.get(i));
+                        }
+
+                        values.add(subList);
+                    }
                 }
 
-                List<List<Object>> values = Arrays.asList(
-                        valuesItem,valuesItem
-                );
+
+
                 ValueRange body = new ValueRange()
-                        .setValues(values);
+                        .setValues(values).setMajorDimension("ROWS");
                 UpdateValuesResponse result =
                         mService.spreadsheets().values().update(spreadSheetId, range, body)
                                 .setValueInputOption("USER_ENTERED")
                                 .execute();
-                System.out.printf("%d cells updated.", result.getUpdatedCells());
 
-
+                return new ArrayList<>();
 
             case PUT_MULTI_TYPE:
 
@@ -165,13 +171,9 @@ public class MakeSheetsAPIRequestTask extends AsyncTask<Void, Void, List<String>
                           "}"
                 );
 
-                valuesItem = new ArrayList<>();
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    valuesItem.add(jsonArray.get(i));
-                }
+
 
                 values = Arrays.asList(
-                        valuesItem,valuesItem
                 );
 
                 List<ValueRange> data = new ArrayList<>();
@@ -186,7 +188,7 @@ public class MakeSheetsAPIRequestTask extends AsyncTask<Void, Void, List<String>
                         mService.spreadsheets().values().batchUpdate(spreadSheetId, putMultiBody).execute();
                 System.out.printf("%d cells updated.", putMultiResult.getTotalUpdatedCells());
 
-
+                return new ArrayList<>();
 
             case APPEND_TYPE:
 
@@ -229,24 +231,32 @@ public class MakeSheetsAPIRequestTask extends AsyncTask<Void, Void, List<String>
                 );
                 BatchGetValuesResponse getMultiResult = mService.spreadsheets().values().batchGet(spreadSheetId)
                         .setRanges(ranges).execute();
-                System.out.printf("%d ranges retrieved.", getMultiResult.getValueRanges().size());
+
+
+                return release(getMultiResult.getValueRanges().get(0).getValues());
 
             case GET_TYPE:
             default:
 
-                response = spreadsheet
+                ValueRange response = spreadsheet
                         .get(spreadSheetId, range)
                         .execute();
+
+
+                return release(response.getValues());
         }
+    }
 
+    private List<String> release(List<List<Object>> mGetValues){
 
+        List<String> results = new ArrayList<>();
 
-        List<List<Object>> values = response.getValues();
-        if (values != null) {
-            for (List row : values) {
+        if (mGetValues != null) {
+            for (List row : mGetValues) {
                 results.add(row.get(0) + ", " + row.size());
             }
         }
+
         return results;
     }
 

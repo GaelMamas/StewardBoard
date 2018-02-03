@@ -461,22 +461,26 @@ public class PlaceholderFragment extends Fragment
             case R.id.button_0:
 
                 new MakeSheetsAPIRequestTask(mCredential, getActivity(),
-                        inputList, spreadsheetId, "Test!A1:C1", 0).execute();
+                        inputList, spreadsheetId, "Test!A1:C1",
+                        MakeSheetsAPIRequestTask.GET_TYPE).execute();
 
             case R.id.button_1:
 
                 new MakeSheetsAPIRequestTask(mCredential, getActivity(),
-                        inputList, spreadsheetId, "Test!A1:C1", 1).execute();
+                        inputList, spreadsheetId, "Test!A1:C1",
+                        MakeSheetsAPIRequestTask.GET_MULTI_TYPE).execute();
 
             case R.id.button_2:
 
                 new MakeSheetsAPIRequestTask(mCredential, getActivity(),
-                        inputList, spreadsheetId, "Test!A1:C1", 2).execute();
+                        inputList, spreadsheetId, "Test!A1:D5",
+                        MakeSheetsAPIRequestTask.PUT_TYPE).execute();
 
             case R.id.button_3:
 
                 new MakeSheetsAPIRequestTask(mCredential, getActivity(),
-                        inputList, spreadsheetId, "Test!A1:C1", 3).execute();
+                        inputList, spreadsheetId, "Test!A1:A4",
+                        MakeSheetsAPIRequestTask.PUT_MULTI_TYPE).execute();
 
         }
     }
