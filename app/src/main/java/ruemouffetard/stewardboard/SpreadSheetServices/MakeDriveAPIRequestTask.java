@@ -1,4 +1,4 @@
-package ruemouffetard.stewardboard;
+package ruemouffetard.stewardboard.SpreadSheetServices;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ruemouffetard.stewardboard.PlaceholderFragment;
+
 /**
  * Created by user on 15/09/2017.
  */
@@ -46,7 +48,7 @@ public class MakeDriveAPIRequestTask extends AsyncTask<Void, Void, JSONArray> {
     private Activity activity;
     private JSONArray jsonArray;
 
-    MakeDriveAPIRequestTask(GoogleAccountCredential credential, Activity activity, JSONArray data) {
+    public MakeDriveAPIRequestTask(GoogleAccountCredential credential, Activity activity, JSONArray data) {
         HttpTransport transport = AndroidHttp.newCompatibleTransport();
         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
         this.mService = new com.google.api.services.drive.Drive.Builder(

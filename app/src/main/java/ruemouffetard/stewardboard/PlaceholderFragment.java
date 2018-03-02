@@ -7,7 +7,6 @@ package ruemouffetard.stewardboard;
 import android.Manifest;
 import android.accounts.AccountManager;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,17 +19,16 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatSpinner;
-import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +49,12 @@ import java.util.List;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
+import ruemouffetard.stewardboard.SpreadSheetServices.MakeDriveAPIRequestTask;
+import ruemouffetard.stewardboard.SpreadSheetServices.MakeSheetsAPIRequestTask;
+import ruemouffetard.stewardboard.SpreadSheetServices.SheetsMultiReadRequests;
+import ruemouffetard.stewardboard.SpreadSheetServices.SheetsMultiWriteRequests;
+import ruemouffetard.stewardboard.SpreadSheetServices.SheetsReadRequests;
+import ruemouffetard.stewardboard.SpreadSheetServices.SheetsWriteRequests;
 
 import static android.app.Activity.RESULT_OK;
 import static android.view.View.GONE;
@@ -63,10 +67,9 @@ public class PlaceholderFragment extends Fragment
         implements TextView.OnEditorActionListener, EasyPermissions.PermissionCallbacks, View.OnClickListener {
 
     GoogleAccountCredential mCredential, mCredentialDrive;
-    ProgressDialog mProgress;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
-    static final int REQUEST_AUTHORIZATION = 1001;
+    public static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
@@ -83,6 +86,7 @@ public class PlaceholderFragment extends Fragment
 
     private AppCompatSpinner spinner;
     private AppCompatEditText editText, addInputEditText;
+    private Button singleReadButton;
     private List<String> inputList = new ArrayList<>();
     private FloatingActionButton actionButton;
     private ArrayAdapter<String> adapter;
@@ -111,19 +115,16 @@ public class PlaceholderFragment extends Fragment
         editText = (AppCompatEditText) rootView.findViewById(R.id.edittext);
         addInputEditText = (AppCompatEditText) rootView.findViewById(R.id.edittext_add_input);
 
-        rootView.findViewById(R.id.button_0).setOnClickListener(this);
+        singleReadButton = rootView.findViewById(R.id.button_0);
+        singleReadButton.setOnClickListener(this);
         rootView.findViewById(R.id.button_1).setOnClickListener(this);
         rootView.findViewById(R.id.button_2).setOnClickListener(this);
         rootView.findViewById(R.id.button_3).setOnClickListener(this);
 
 
-        /*inputList.add("Coures alimentaires");
-        inputList.add("Déjeuner");
-        inputList.add("Petites dépenses");
-        inputList.add("Shopping");*/
-
         adapter = new ArrayAdapter<>(getContext(), R.layout.test_text, inputList);
 
+        spinner.requestLayout();
         spinner.setAdapter(adapter);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -147,6 +148,7 @@ public class PlaceholderFragment extends Fragment
                 //hideShowInputView(addInputEditText.getVisibility() == View.GONE);
 
                 getResultsFromApi();
+
             }
         });
 
@@ -159,8 +161,8 @@ public class PlaceholderFragment extends Fragment
                 for (int i = 0; i < userGoogleSheetFiles.length(); i++) {
 
                     try {
-                        if(((JSONObject)(userGoogleSheetFiles.get(i))).get("name").equals("Test Stewardship")){
-                            spreadsheetId = (String) ((JSONObject)(userGoogleSheetFiles.get(i))).get("id");
+                        if (((JSONObject) (userGoogleSheetFiles.get(i))).get("name").equals("Test Stewardship")) {
+                            spreadsheetId = (String) ((JSONObject) (userGoogleSheetFiles.get(i))).get("id");
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -177,12 +179,12 @@ public class PlaceholderFragment extends Fragment
 
 
         mCredential = GoogleAccountCredential.usingOAuth2(
-                //SCOPES_SHEETS OR SCOPES_DRIVE
+                // SCOPES_SHEETS
                 getActivity().getApplicationContext(), Arrays.asList(SCOPES_SHEETS))
                 .setBackOff(new ExponentialBackOff());
 
         mCredentialDrive = GoogleAccountCredential.usingOAuth2(
-                //SCOPES_SHEETS OR SCOPES_DRIVE
+                // SCOPES_DRIVE
                 getActivity().getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
 
@@ -195,7 +197,7 @@ public class PlaceholderFragment extends Fragment
         super.onActivityCreated(savedInstanceState);
 
 
-        //getResultsFromApi();
+        spreadsheetId = Constants.SPREADSHEETID;
 
     }
 
@@ -255,8 +257,8 @@ public class PlaceholderFragment extends Fragment
         } else if (!isDeviceOnline()) {
             Toast.makeText(getContext(), "No network connection available.", Toast.LENGTH_SHORT).show();
         } else {
-            new MakeSheetsAPIRequestTask(mCredential, getActivity(),
-                    inputList, spreadsheetId, "Test!A1:C1", 0).execute();
+            new SheetsReadRequests(mCredential, getActivity(),
+                    inputList, spreadsheetId, "Vases!A1:C2").execute();
         }
     }
 
@@ -456,31 +458,31 @@ public class PlaceholderFragment extends Fragment
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
 
             case R.id.button_0:
 
-                new MakeSheetsAPIRequestTask(mCredential, getActivity(),
-                        inputList, spreadsheetId, "Test!A1:C1",
-                        MakeSheetsAPIRequestTask.GET_TYPE).execute();
+                new SheetsReadRequests(mCredential, getActivity(),
+                        inputList, spreadsheetId, "Vases!A1:C5").execute();
 
             case R.id.button_1:
 
-                new MakeSheetsAPIRequestTask(mCredential, getActivity(),
-                        inputList, spreadsheetId, "Test!A1:C1",
-                        MakeSheetsAPIRequestTask.GET_MULTI_TYPE).execute();
+                new SheetsMultiReadRequests(mCredential, getActivity(),
+                        inputList, spreadsheetId, "Test!A1:C1").execute();
 
             case R.id.button_2:
 
-                new MakeSheetsAPIRequestTask(mCredential, getActivity(),
-                        inputList, spreadsheetId, "Test!A1:D5",
-                        MakeSheetsAPIRequestTask.PUT_TYPE).execute();
+                singleReadButton.performClick();
+
+                new SheetsWriteRequests(mCredential, getActivity(),
+                        inputList, spreadsheetId, "Vases!A8:C8").execute();
+
+                singleReadButton.performClick();
 
             case R.id.button_3:
 
-                new MakeSheetsAPIRequestTask(mCredential, getActivity(),
-                        inputList, spreadsheetId, "Test!A1:A4",
-                        MakeSheetsAPIRequestTask.PUT_MULTI_TYPE).execute();
+                new SheetsMultiWriteRequests(mCredential, getActivity(),
+                        inputList, spreadsheetId, "Test!A1:A4").execute();
 
         }
     }
