@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:id="@+id/text_expense_item_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        tools:text="Special Blending"/>
+
+    <TextView
+        android:id="@+id/text_income"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:background="@android:color/holo_green_dark"
+        android:paddingEnd="20dp"
+        tools:ignore="RtlSymmetry"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="145dp"
+        tools:text="90%"/>
+
+    <TextView
+        android:id="@+id/text_use"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/holo_orange_dark"
+        android:paddingEnd="100dp"
+        app:layout_constraintBottom_toTopOf="@+id/text_income"
+        app:layout_constraintTop_toBottomOf="@+id/text_expense_item_title"
+        app:layout_constraintVertical_bias="0.114"
+        tools:layout_editor_absoluteX="0dp"
+        tools:text="60%"/>
+
+</android.support.constraint.ConstraintLayout>

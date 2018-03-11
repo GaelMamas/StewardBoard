@@ -1,6 +1,8 @@
 package ruemouffetard.stewardboard.SpreadSheetServices;
 
 import android.app.Activity;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.services.sheets.v4.Sheets;
@@ -27,25 +29,44 @@ public class SheetsMultiReadRequests extends MakeSheetsAPIRequestTask {
         Sheets.Spreadsheets.Values spreadsheet = this.mService.spreadsheets().values();
 
 
-        List<String> ranges = Arrays.asList(
-                "Test!A1:A16",
-                "Test!C2:F3"
-        );
+        String [] rangeArray = range.split(";") ;
+
+        if(rangeArray.length == 0) return null;
+
+        List<String> ranges = Arrays.asList(rangeArray);
+
         BatchGetValuesResponse getMultiResult = null;
         try {
-            getMultiResult = mService.spreadsheets().values().batchGet(spreadSheetId)
-                    .setRanges(ranges).execute();
+
+            if(spreadsheet.batchGet(spreadSheetId) != null){
+
+                if(spreadsheet.batchGet(spreadSheetId).setRanges(ranges) != null){
+
+                    getMultiResult =  spreadsheet.batchGet(spreadSheetId)
+                            .setRanges(ranges).execute();
+
+                }else{
+
+                    Log.d(getClass().getSimpleName(), "Suddenly shut down cause setRanges() returned null");
+                }
+
+            }else{
+
+                Log.d(getClass().getSimpleName(), "Suddenly shut down cause execute() returned null");
+
+            }
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         if (getMultiResult != null) {
             return getMultiResult.getValueRanges().get(0).getValues();
         }
 
-        return null;
 
+        return null;
 
     }
 
@@ -65,6 +86,8 @@ public class SheetsMultiReadRequests extends MakeSheetsAPIRequestTask {
 
     @Override
     protected void onPostExecute(List<List<Object>> result) {
+        super.onPostExecute(new ArrayList<String>());
+
         if (result == null || result.size() == 0) {
             mOutputText.add("No results returned.");
         } else {

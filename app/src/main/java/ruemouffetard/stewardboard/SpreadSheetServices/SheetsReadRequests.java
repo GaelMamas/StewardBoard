@@ -1,6 +1,7 @@
 package ruemouffetard.stewardboard.SpreadSheetServices;
 
 import android.app.Activity;
+import android.util.Log;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.services.sheets.v4.Sheets;
@@ -8,7 +9,6 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,42 +27,27 @@ public class SheetsReadRequests extends MakeSheetsAPIRequestTask {
 
         Sheets.Spreadsheets.Values spreadsheet = this.mService.spreadsheets().values();
 
-        /*switch (spreadsheetRequestType){
-
-            case GET_MULTI_TYPE:
-
-                List<String> ranges = Arrays.asList(
-                        "Test!A1:A16",
-                        "Test!C2:F3"
-                );
-                BatchGetValuesResponse getMultiResult = null;
-                try {
-                    getMultiResult = mService.spreadsheets().values().batchGet(spreadSheetId)
-                            .setRanges(ranges).execute();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-                return release(getMultiResult.getValueRanges().get(0).getValues());
-
-            case GET_TYPE:
-            default:*/
-
         try {
-             ValueRange response = spreadsheet
-                    .get(spreadSheetId, range)
-                    .execute();
 
+
+            ValueRange response = null;
+
+            if (spreadsheet.get(spreadSheetId, range) != null) {
+
+                response = spreadsheet.get(spreadSheetId, range).execute();
+
+            } else {
+                Log.d(getClass().getSimpleName(), "Suddenly shut down cause get(sheetId, range) returned null");
+            }
+
+            assert response != null;
             return response.getValues();
+
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
 
-
-
-        //}
     }
 
     private List<String> release(List<List<Object>> mGetValues) {
@@ -71,8 +56,8 @@ public class SheetsReadRequests extends MakeSheetsAPIRequestTask {
 
         if (mGetValues != null) {
             for (List row : mGetValues) {
-                if(row != null && !row.isEmpty())
-                results.add(row.get(0) + ", " + row.size());
+                if (row != null && !row.isEmpty())
+                    results.add(row.get(0) + ", " + row.size());
             }
         }
 
@@ -82,6 +67,8 @@ public class SheetsReadRequests extends MakeSheetsAPIRequestTask {
 
     @Override
     protected void onPostExecute(List<List<Object>> result) {
+
+        super.onPostExecute(new ArrayList<String>());
 
         if (result == null || result.size() == 0) {
             mOutputText.add("No results returned.");
