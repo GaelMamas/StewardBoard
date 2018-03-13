@@ -1,6 +1,8 @@
 package ruemouffetard.stewardboard;
 
 import android.support.v4.math.MathUtils;
+import android.text.TextUtils;
+import android.util.Pair;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -8,7 +10,17 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
+import org.joda.time.Months;
+import org.joda.time.ReadableInstant;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static ruemouffetard.stewardboard.SpreadSheetServices.UsefulMehtod.sumFloatList;
 
@@ -27,6 +39,45 @@ public class Core {
 
         private String belongingSheet;
 
+        public float getIncome() {
+            return income;
+        }
+
+        public void setIncome(float income) {
+            this.income = income;
+        }
+
+        public int getMonthOfYear() {
+            return monthOfYear;
+        }
+
+        public void setMonthOfYear(int monthOfYear) {
+            this.monthOfYear = monthOfYear;
+        }
+
+        public int getYear() {
+            return year;
+        }
+
+        public void setYear(int year) {
+            this.year = year;
+        }
+
+        public String getCurrency() {
+            return currency;
+        }
+
+        public void setCurrency(String currency) {
+            this.currency = currency;
+        }
+
+        public String getBelongingSheet() {
+            return belongingSheet;
+        }
+
+        public void setBelongingSheet(String belongingSheet) {
+            this.belongingSheet = belongingSheet;
+        }
     }
 
     public static class ExpensesTable{
@@ -98,7 +149,43 @@ public class Core {
     public static class ProjectInvestmentItem extends UsualExpenseItem{
 
         private float monthlyWishedAmount;
+        private String projectType;
 
+        private float fund;
+
+        private DateTime depositStartedDate;
+
+        public float getMonthlyWishedAmount() {
+            return monthlyWishedAmount;
+        }
+
+        public void setMonthlyWishedAmount(float monthlyWishedAmount) {
+            this.monthlyWishedAmount = monthlyWishedAmount;
+        }
+
+        public String getProjectType() {
+            return projectType;
+        }
+
+        public void setProjectType(String projectType) {
+            this.projectType = projectType;
+        }
+
+        public float getFund() {
+            return fund;
+        }
+
+        public void setFund(float fund) {
+            this.fund += fund;
+        }
+
+        public DateTime getDepositStartedDate() {
+            return depositStartedDate;
+        }
+
+        public void setDepositStartedDate(DateTime depositStartedDate) {
+            this.depositStartedDate = depositStartedDate;
+        }
     }
 
     public static class ExpenseItem{
@@ -190,7 +277,7 @@ public class Core {
 
             ExpenseItem expenseItem = new ExpenseItem();
 
-            expenseItem.setBelongingSheet(datePicker.);
+            /*expenseItem.setBelongingSheet(datePicker.);
 
             expenseItem.setBelonginTable(sheetTablePicker.get);
 
@@ -198,7 +285,7 @@ public class Core {
 
             expenseItem.setMiscellaneous(miscellaneousEditText.getText().toString());
 
-            expenseItem.setCost(Integer.parseInt(expenseItemField.getText().toString()));
+            expenseItem.setCost(Integer.parseInt(expenseItemField.getText().toString()));*/
 
             return expenseItem;
 
@@ -232,8 +319,8 @@ public class Core {
 
     public static class MonthlyExpenseItemCheckUp{
 
-        UsualExpenseItem budgeted;
-        ExpensesTable expense;
+        private UsualExpenseItem budgeted;
+        private ExpensesTable expense;
 
         public void workoutLeftovers(){
 
@@ -242,34 +329,88 @@ public class Core {
 
         }
 
+        public UsualExpenseItem getBudgeted() {
+            return budgeted;
+        }
+
+        public ExpensesTable getExpense() {
+            return expense;
+        }
     }
 
     public static class MonthlyGeneralCheckUp{
 
         private Income income;
-        private List<UsualExpenseItem> budgetedItemTables;
-        private List<ExpensesTable> expensesTables;
+        private List<MonthlyExpenseItemCheckUp> expenseItemCheckUps;
 
-        public void workoutLeftovers(){
+        public Map<String, Pair<Float, Float>> workoutPercentages(){
 
-            for(UsualExpenseItem usualExpenseItem: budgetedItemTables){
+            Map<String, Pair<Float, Float>>
+            consumptionsPercentages = new HashMap<>();
 
-                for(ExpensesTable expensesTable: expensesTables){
+            for (MonthlyExpenseItemCheckUp itemCheckUp: expenseItemCheckUps){
 
-                    if(usualExpenseItem.getTitle().contentEquals(expensesTable.name)){
-
-                        usualExpenseItem.setLeftOvers(
-                                usualExpenseItem.monthlyDefinedAmount
-                                - sumFloatList(expensesTable.expenseItems)
-                        );
-
-                    }
-
-                }
+                consumptionsPercentages.put(itemCheckUp.getBudgeted().getTitle(),
+                        new Pair<>(itemCheckUp.getBudgeted().getMonthlyDefinedAmount()/income.getIncome(),
+                                itemCheckUp.getBudgeted().getLeftOvers()/income.getIncome()));
 
             }
 
+            return consumptionsPercentages;
+
         }
+
+    }
+
+    public static class EnterprisesMonthlyIndicators{
+
+        private List<ProjectInvestmentItem> projectInvestmentItems;
+        private List<MonthlyExpenseItemCheckUp> expenseItemCheckUps;
+
+
+        public float checkupGeneralConsumtion(){
+
+            float sum = 0F;
+            for (MonthlyExpenseItemCheckUp item: expenseItemCheckUps)sum += item.getBudgeted().getLeftOvers();
+
+            return sum;
+
+        }
+
+        public void setBudgetArbitration(Map<String, Float> investmentPriorities){
+
+            for (int i = 0; i < projectInvestmentItems.size(); i++) {
+
+                if(investmentPriorities.containsKey(projectInvestmentItems.get(i).getTitle())){
+
+                    projectInvestmentItems.get(i).setFund(investmentPriorities.get(projectInvestmentItems.get(i).getTitle()));
+
+                }
+            }
+
+        }
+
+        public void setDefaultArbitration(String projectTile, float amount){
+
+            for (int i = 0; i < projectInvestmentItems.size(); i++) {
+
+                if(projectInvestmentItems.get(i).getTitle().contentEquals(projectTile))
+                    projectInvestmentItems.get(i).setFund(amount);
+            }
+
+        }
+
+
+        public float workoutForecastFundUpToNow(ProjectInvestmentItem investmentItem){
+
+            Months months = Months.monthsBetween(investmentItem.getDepositStartedDate(),
+                    LocalDateTime.now().toDateTime());
+
+
+            return months.getMonths()*investmentItem.getMonthlyWishedAmount();
+
+        }
+
 
     }
 
