@@ -6,4 +6,10 @@
     <string name="specific_input_field_hint">Quel vaut %s?</string>
     <string name="invoice_output">%1$s a coûté %2$s€</string>
     <string name="generic_input_adding">Ajouter une entrée dans la liste</string>
+    <string name="keying_expenses_table_hint">Select the expense type</string>
+    <string name="keying_expense_input_hint">Entrer the cost</string>
+    <string name="keying_expense_actual_currency">Currency</string>
+    <string name="keying_expense_miscellaneous_hint">Details about the expense</string>
+    <string name="keying_expense_occurred_date">made on %s</string>
+    <string name="keying_expense_save">Save</string>
 </resources>

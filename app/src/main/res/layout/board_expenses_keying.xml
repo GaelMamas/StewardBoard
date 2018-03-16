@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/space_normal">
+
+    <ruemouffetard.stewardboard.Widgets.BetterSpinner
+        android:id="@+id/spinner_expenses_table_inputs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:hint="@string/keying_expenses_table_hint"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/edittext_expense_input"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:hint="@string/keying_expense_input_hint"
+        android:imeOptions="actionNone"
+        android:inputType="number"
+        android:lines="1"
+        android:maxWidth="200dp"
+        app:layout_constraintEnd_toStartOf="@+id/spinner_expense_currency"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="@+id/spinner_expenses_table_inputs"
+        app:layout_constraintTop_toBottomOf="@+id/spinner_expenses_table_inputs"
+        tools:text="ZEOJEOEJEOJEJ"/>
+
+    <ruemouffetard.stewardboard.Widgets.BetterSpinner
+        android:id="@+id/spinner_expense_currency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="30dp"
+        android:hint="@string/keying_expense_actual_currency"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintStart_toEndOf="@+id/edittext_expense_input"
+        app:layout_constraintTop_toTopOf="@+id/edittext_expense_input"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="471dp"/>
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/edittext_expense_miscellaneous"
+        android:layout_width="360dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:drawable/editbox_background_normal"
+        android:hint="@string/keying_expense_miscellaneous_hint"
+        android:maxLength="50"
+        android:maxLines="2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/spinner_expenses_table_inputs"
+        app:layout_constraintTop_toBottomOf="@+id/edittext_expense_input"/>
+
+    <CheckedTextView
+        android:id="@+id/checkedTextView_expense_occurred_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:checked="true"
+        android:padding="@dimen/space_small"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/spinner_expenses_table_inputs"
+        app:layout_constraintTop_toBottomOf="@+id/edittext_expense_miscellaneous"
+        tools:text="@string/keying_expense_occurred_date"/>
+
+    <Button
+        android:id="@+id/button_expense_input_publish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bkgnd_flip_gray_blue"
+        android:paddingEnd="@dimen/space_small"
+        android:paddingStart="@dimen/space_small"
+        android:text="@string/keying_expense_save"
+        android:textColor="@color/card_backgroud_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkedTextView_expense_occurred_date"/>
+
+    <ProgressBar
+        android:id="@+id/progressbar_expense_in_saving"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminateTint="@color/colorPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"/>
+
+</android.support.constraint.ConstraintLayout>
