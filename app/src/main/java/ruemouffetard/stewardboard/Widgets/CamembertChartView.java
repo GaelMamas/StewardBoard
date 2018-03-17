@@ -27,5 +27,5 @@ public class CamembertChartView extends View {
 
     }
 
-    on
+
 }

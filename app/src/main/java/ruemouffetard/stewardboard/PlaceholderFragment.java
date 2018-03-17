@@ -15,6 +15,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatEditText;
@@ -29,6 +30,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +56,7 @@ import ruemouffetard.stewardboard.SpreadSheetServices.SheetsMultiReadRequests;
 import ruemouffetard.stewardboard.SpreadSheetServices.SheetsMultiWriteRequests;
 import ruemouffetard.stewardboard.SpreadSheetServices.SheetsReadRequests;
 import ruemouffetard.stewardboard.SpreadSheetServices.SheetsWriteRequests;
+import ruemouffetard.stewardboard.Widgets.ExpensesKeyingLayout;
 
 import static android.app.Activity.RESULT_OK;
 import static android.view.View.GONE;
@@ -102,9 +105,9 @@ public class PlaceholderFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_expenses_details, container, false);
 
-        spinner = (AppCompatSpinner) rootView.findViewById(R.id.spinner);
+        /*spinner = (AppCompatSpinner) rootView.findViewById(R.id.spinner);
         editText = (AppCompatEditText) rootView.findViewById(R.id.edittext);
         addInputEditText = (AppCompatEditText) rootView.findViewById(R.id.edittext_add_input);
 
@@ -178,7 +181,10 @@ public class PlaceholderFragment extends Fragment
         mCredentialDrive = GoogleAccountCredential.usingOAuth2(
                 // SCOPES_DRIVE
                 getActivity().getApplicationContext(), Arrays.asList(SCOPES))
-                .setBackOff(new ExponentialBackOff());
+                .setBackOff(new ExponentialBackOff());*/
+
+
+
 
         return rootView;
     }
