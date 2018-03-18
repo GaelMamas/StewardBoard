@@ -1,6 +1,8 @@
 package ruemouffetard.stewardboard;
 
+import java.text.DateFormatSymbols;
 import java.util.List;
+import java.util.Locale;
 
 import ruemouffetard.stewardboard.Model.ExpenseItem;
 
@@ -53,5 +55,11 @@ public class UsefulMehtod {
                 .append(savable.getMiscellaneous());
 
         return builder.toString();
+    }
+
+    public static String formatMonth(int month, Locale locale) {
+        DateFormatSymbols symbols = new DateFormatSymbols(locale);
+        String[] monthNames = symbols.getMonths();
+        return monthNames[month - 1];
     }
 }

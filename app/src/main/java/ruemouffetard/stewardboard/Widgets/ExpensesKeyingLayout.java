@@ -1,16 +1,16 @@
 package ruemouffetard.stewardboard.Widgets;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Handler;
-import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -20,12 +20,16 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import org.joda.time.JodaTimePermission;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-import ruemouffetard.stewardboard.Model.ExpenseItem;
 import ruemouffetard.stewardboard.R;
 import ruemouffetard.stewardboard.UsefulMehtod;
 
@@ -33,7 +37,8 @@ import ruemouffetard.stewardboard.UsefulMehtod;
  * Created by admin on 14/03/2018.
  */
 
-public class ExpensesKeyingLayout extends ConstraintLayout implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class ExpensesKeyingLayout extends CardView implements View.OnClickListener, AdapterView.OnItemSelectedListener,
+        DatePickerDialog.OnDateSetListener {
 
     //février 2018/repas avec d'autres/16.45£ d02 Pizza Mateo
     //février 2018!A23
@@ -44,6 +49,10 @@ public class ExpensesKeyingLayout extends ConstraintLayout implements View.OnCli
     private EditText mMiscellaneousEditText;
 
     private CheckedTextView mTodayExpenseButton;
+    private DatePickerDialog datePickerDialog = new DatePickerDialog(
+            getContext(), this, Calendar.getInstance().get(Calendar.YEAR),
+            Calendar.getInstance().get(Calendar.MONTH),
+            Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
 
     private Button mValidateButton;
 
@@ -61,19 +70,14 @@ public class ExpensesKeyingLayout extends ConstraintLayout implements View.OnCli
     }
 
     public ExpensesKeyingLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
+
+    }
+
+    public ExpensesKeyingLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
 
         rootView = inflate(context, R.layout.board_expenses_keying, this);
-
-        mExpensesTablePicker = rootView.findViewById(R.id.spinner_expenses_table_inputs);
-        mExpenseItemField = rootView.findViewById(R.id.edittext_expense_input);
-        mCurrencyPicker = rootView.findViewById(R.id.spinner_expense_currency);
-        mMiscellaneousEditText = rootView.findViewById(R.id.edittext_expense_miscellaneous);
-        mTodayExpenseButton = rootView.findViewById(R.id.checkedTextView_expense_occurred_date);
-        mValidateButton = rootView.findViewById(R.id.button_expense_input_publish);
-        mProgressBar = rootView.findViewById(R.id.progressbar_expense_in_saving);
-
-
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -88,7 +92,7 @@ public class ExpensesKeyingLayout extends ConstraintLayout implements View.OnCli
 
         //TODO Set up the actual currencies https://gist.github.com/Fluidbyte/2973986#file-common-currency-json
         ArrayAdapter<String> currencyAdapter = new ArrayAdapter<>(context,
-                R.layout.test_text, new String[]{"€", "£", "$"});
+                R.layout.test_text, Arrays.asList(new String[]{"€", "£", "$"}));
 
         mCurrencyPicker.setAdapter(currencyAdapter);
 
@@ -102,7 +106,7 @@ public class ExpensesKeyingLayout extends ConstraintLayout implements View.OnCli
         mTodayExpenseButton.setOnClickListener(this);
         mValidateButton.setOnClickListener(this);
 
-        mMiscellaneousEditText.addTextChangedListener(new TextWatcher() {
+        mExpenseItemField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -125,6 +129,15 @@ public class ExpensesKeyingLayout extends ConstraintLayout implements View.OnCli
 
     @Override
     protected void onLayout(boolean b, int i, int i1, int i2, int i3) {
+
+        mExpensesTablePicker = rootView.findViewById(R.id.spinner_expenses_table_inputs);
+        mExpenseItemField = rootView.findViewById(R.id.edittext_expense_input);
+        mCurrencyPicker = rootView.findViewById(R.id.spinner_expense_currency);
+        mMiscellaneousEditText = rootView.findViewById(R.id.edittext_expense_miscellaneous);
+        mTodayExpenseButton = rootView.findViewById(R.id.checkedTextView_expense_occurred_date);
+        mValidateButton = rootView.findViewById(R.id.button_expense_input_publish);
+        mProgressBar = rootView.findViewById(R.id.progressbar_expense_in_saving);
+
         //TODO START TEST
         List<String> testList = new ArrayList<>();
         testList.add("Courses Alimentaires");
@@ -134,6 +147,9 @@ public class ExpensesKeyingLayout extends ConstraintLayout implements View.OnCli
 
 
         init(getContext(), testList, "March 2018");
+
+        super.onLayout(b, i, i1, i2, i3);
+
     }
 
     @Override
@@ -142,8 +158,7 @@ public class ExpensesKeyingLayout extends ConstraintLayout implements View.OnCli
 
             case R.id.checkedTextView_expense_occurred_date:
 
-                //TODO Pop up the Dialog Picker
-                Toast.makeText(getContext(), "Pop the Dialog Picker", Toast.LENGTH_SHORT).show();
+                datePickerDialog.show();
 
                 break;
             case R.id.button_expense_input_publish:
@@ -165,6 +180,11 @@ public class ExpensesKeyingLayout extends ConstraintLayout implements View.OnCli
                         @Override
                         public void run() {
                             mProgressBar.setVisibility(GONE);
+                            mExpensesTablePicker.resetPlaceHolderText();
+                            mExpenseItemField.setText("");
+                            mMiscellaneousEditText.setText("");
+
+                            Snackbar.make(rootView, R.string.keying_successfully_completed, Snackbar.LENGTH_SHORT).show();
                         }
                     }, 3000);
                     //TODO END
@@ -176,18 +196,18 @@ public class ExpensesKeyingLayout extends ConstraintLayout implements View.OnCli
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-        switch (adapterView.getId()){
+    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long viewId) {
+        switch ((int) viewId) {
             case R.id.spinner_expenses_table_inputs:
 
-                mExpensesTable = (String)adapterView.getItemAtPosition(position);
+                mExpensesTable = (String) adapterView.getItemAtPosition(position);
                 isTablePickerOK = !TextUtils.isEmpty(mExpensesTable);
                 enablePublishButton();
 
                 break;
             case R.id.spinner_expense_currency:
 
-                mCurrency = (String)adapterView.getItemAtPosition(position);
+                mCurrency = (String) adapterView.getItemAtPosition(position);
                 isCurrencyPickerOK = !TextUtils.isEmpty(mCurrency);
                 enablePublishButton();
 
@@ -201,7 +221,21 @@ public class ExpensesKeyingLayout extends ConstraintLayout implements View.OnCli
 
     }
 
-    private void enablePublishButton(){
-        mValidateButton.setSelected(isTablePickerOK&&isCurrencyPickerOK&&isCostFieldOK);
+    private void enablePublishButton() {
+        mValidateButton.setSelected(isTablePickerOK & isCurrencyPickerOK & isCostFieldOK);
+        mValidateButton.setEnabled(mValidateButton.isSelected());
+    }
+
+    @Override
+    public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
+
+        String selectedDay = dayOfMonth + "/" + monthOfYear + "/" + year;
+
+        mTodayExpenseButton.setText(getContext().getString(R.string.keying_expense_occurred_date, selectedDay));
+
+        String month = UsefulMehtod.formatMonth(monthOfYear, Locale.getDefault());
+
+        sheetName = month.substring(0, 1).toUpperCase() + month.substring(1).toLowerCase() + " " + year;
+
     }
 }
