@@ -1,5 +1,7 @@
 package ruemouffetard.stewardboard;
 
+import android.text.TextUtils;
+
 import java.text.DateFormatSymbols;
 import java.util.List;
 import java.util.Locale;
@@ -23,15 +25,15 @@ public class UsefulMehtod {
 
         ExpenseItem expenseItem = new ExpenseItem();
 
-            expenseItem.setBelongingSheet(sheet);
+            expenseItem.setBelongingSheet(TextUtils.isEmpty(sheet)?"":sheet);
 
-            expenseItem.setBelonginTable(table);
+            expenseItem.setBelonginTable(TextUtils.isEmpty(table)?"":table);
 
-            expenseItem.setCurrency(currency);
+            expenseItem.setCurrency(TextUtils.isEmpty(currency)?"":currency);
 
-            expenseItem.setMiscellaneous(miscellaneous);
+            expenseItem.setMiscellaneous(TextUtils.isEmpty(miscellaneous)?"":miscellaneous);
 
-            expenseItem.setCost(cost);
+            expenseItem.setCost(cost<0f?0f:cost);
 
         return expenseItem;
 

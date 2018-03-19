@@ -107,6 +107,15 @@ public class PlaceholderFragment extends Fragment
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_expenses_details, container, false);
 
+        ExpensesKeyingLayout keyingLayout = rootView.findViewById(R.id.keying_board);
+
+        List<String> test = new ArrayList<>();
+        test.add("Déjeuner");
+        test.add("Petit déjeuner");
+        test.add("Dîner");
+
+        keyingLayout.setKeyingLayout(test, "April 2018");
+
         /*spinner = (AppCompatSpinner) rootView.findViewById(R.id.spinner);
         editText = (AppCompatEditText) rootView.findViewById(R.id.edittext);
         addInputEditText = (AppCompatEditText) rootView.findViewById(R.id.edittext_add_input);

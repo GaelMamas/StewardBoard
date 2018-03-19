@@ -20,8 +20,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import org.joda.time.JodaTimePermission;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +58,8 @@ public class ExpensesKeyingLayout extends CardView implements View.OnClickListen
 
     private View rootView;
 
+    private List<String> expensesTableNames = new ArrayList<>();
+
     private String sheetName, mExpensesTable, mCurrency;
     private boolean isTablePickerOK, isCurrencyPickerOK, isCostFieldOK;
 
@@ -81,23 +81,21 @@ public class ExpensesKeyingLayout extends CardView implements View.OnClickListen
     }
 
     @SuppressLint("SimpleDateFormat")
-    private void init(Context context, List<String> expensesTableNames, String sheetName) {
+    private void init() {
 
-        this.sheetName = sheetName;
-
-        ArrayAdapter<String> expensesTableAdapter = new ArrayAdapter<>(context,
+        ArrayAdapter<String> expensesTableAdapter = new ArrayAdapter<>(getContext(),
                 R.layout.test_text, expensesTableNames);
 
         mExpensesTablePicker.setAdapter(expensesTableAdapter);
 
         //TODO Set up the actual currencies https://gist.github.com/Fluidbyte/2973986#file-common-currency-json
-        ArrayAdapter<String> currencyAdapter = new ArrayAdapter<>(context,
+        ArrayAdapter<String> currencyAdapter = new ArrayAdapter<>(getContext(),
                 R.layout.test_text, Arrays.asList(new String[]{"€", "£", "$"}));
 
         mCurrencyPicker.setAdapter(currencyAdapter);
 
-        mTodayExpenseButton.setText(context.getString(R.string.keying_expense_occurred_date,
-                new SimpleDateFormat("dd/mm/yyyy")
+        mTodayExpenseButton.setText(getContext().getString(R.string.keying_expense_occurred_date,
+                new SimpleDateFormat("dd/MM/yyyy")
                         .format(new Date(System.currentTimeMillis()))));
 
         mExpensesTablePicker.setOnItemSelectedListener(this);
@@ -126,9 +124,7 @@ public class ExpensesKeyingLayout extends CardView implements View.OnClickListen
 
     }
 
-
-    @Override
-    protected void onLayout(boolean b, int i, int i1, int i2, int i3) {
+    private void assignChildrenViews() {
 
         mExpensesTablePicker = rootView.findViewById(R.id.spinner_expenses_table_inputs);
         mExpenseItemField = rootView.findViewById(R.id.edittext_expense_input);
@@ -138,17 +134,26 @@ public class ExpensesKeyingLayout extends CardView implements View.OnClickListen
         mValidateButton = rootView.findViewById(R.id.button_expense_input_publish);
         mProgressBar = rootView.findViewById(R.id.progressbar_expense_in_saving);
 
-        //TODO START TEST
-        List<String> testList = new ArrayList<>();
-        testList.add("Courses Alimentaires");
-        testList.add("Déjeuner");
-        testList.add("Shopping");
-        //TODO END TEST
+    }
 
 
-        init(getContext(), testList, "March 2018");
+    @Override
+    protected void onLayout(boolean b, int i, int i1, int i2, int i3) {
+
+        assignChildrenViews();
+        init();
 
         super.onLayout(b, i, i1, i2, i3);
+
+    }
+
+    public void setKeyingLayout(List<String> expensesTableNames, String sheetName) {
+
+        this.expensesTableNames = expensesTableNames;
+        this.sheetName = sheetName;
+        assignChildrenViews();
+        init();
+        invalidate();
 
     }
 
@@ -179,12 +184,19 @@ public class ExpensesKeyingLayout extends CardView implements View.OnClickListen
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
+
                             mProgressBar.setVisibility(GONE);
+
                             mExpensesTablePicker.resetPlaceHolderText();
+                            isTablePickerOK = false;
+
                             mExpenseItemField.setText("");
+                            isCostFieldOK = false;
+
                             mMiscellaneousEditText.setText("");
 
                             Snackbar.make(rootView, R.string.keying_successfully_completed, Snackbar.LENGTH_SHORT).show();
+
                         }
                     }, 3000);
                     //TODO END
@@ -229,9 +241,8 @@ public class ExpensesKeyingLayout extends CardView implements View.OnClickListen
     @Override
     public void onDateSet(DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) {
 
-        String selectedDay = dayOfMonth + "/" + monthOfYear + "/" + year;
-
-        mTodayExpenseButton.setText(getContext().getString(R.string.keying_expense_occurred_date, selectedDay));
+        mTodayExpenseButton.setText(getContext().getString(R.string.keying_expense_occurred_date,
+                (dayOfMonth + "/" + (monthOfYear + 1) + "/" + year)));
 
         String month = UsefulMehtod.formatMonth(monthOfYear, Locale.getDefault());
 

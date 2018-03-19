@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/space_small"
+    android:background="@color/fourteen"
     android:paddingEnd="@dimen/space_normal"
     android:paddingStart="@dimen/space_normal">
 
@@ -75,7 +75,7 @@
 
     <CheckedTextView
         android:id="@+id/checkedTextView_expense_occurred_date"
-        android:layout_width="wrap_content"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
@@ -85,7 +85,7 @@
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/spinner_expenses_table_inputs"
         app:layout_constraintTop_toBottomOf="@+id/edittext_expense_miscellaneous"
-        tools:text="@string/keying_expense_occurred_date"/>
+        tools:text="Made on 12/12/2019"/>
 
     <Button
         android:id="@+id/button_expense_input_publish"

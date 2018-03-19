@@ -10,7 +10,7 @@
     <string name="keying_expense_input_hint">Entrer the cost</string>
     <string name="keying_expense_actual_currency">Currency</string>
     <string name="keying_expense_miscellaneous_hint">Details about the expense</string>
-    <string name="keying_expense_occurred_date">Made on %s</string>
+    <string name="keying_expense_occurred_date">Made on %1$s</string>
     <string name="keying_expense_save">Save</string>
     <string name="keying_successfully_completed">Keying was successfully completed</string>
 </resources>
