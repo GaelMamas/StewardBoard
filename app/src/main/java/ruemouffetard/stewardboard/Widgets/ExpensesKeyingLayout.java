@@ -104,6 +104,8 @@ public class ExpensesKeyingLayout extends CardView implements View.OnClickListen
         mTodayExpenseButton.setOnClickListener(this);
         mValidateButton.setOnClickListener(this);
 
+        enablePublishButton();
+
         mExpenseItemField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
