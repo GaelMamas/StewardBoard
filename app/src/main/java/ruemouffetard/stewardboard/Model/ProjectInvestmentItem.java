@@ -2,6 +2,8 @@ package ruemouffetard.stewardboard.Model;
 
 import org.joda.time.DateTime;
 
+import java.util.List;
+
 /**
  * Created by admin on 13/03/2018.
  */
@@ -12,6 +14,8 @@ public class ProjectInvestmentItem extends UsualExpenseItem {
     private String projectType;
 
     private float fund;
+
+    private List<String> historicDeposits;
 
     private DateTime depositStartedDate;
 
@@ -47,4 +51,11 @@ public class ProjectInvestmentItem extends UsualExpenseItem {
         this.depositStartedDate = depositStartedDate;
     }
 
+    public List<String> getHistoricDeposits() {
+        return historicDeposits;
+    }
+
+    public void setHistoricDeposits(List<String> historicDeposits) {
+        this.historicDeposits = historicDeposits;
+    }
 }
