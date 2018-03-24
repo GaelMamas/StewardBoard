@@ -30,6 +30,8 @@ public class EnterpriseCellHolder extends BaseViewHolder<ExpensesDetailsFragment
 
         textView.setText(data.getTitle());
 
+        textView.setOnClickListener(this);
+
     }
 
     @Override
