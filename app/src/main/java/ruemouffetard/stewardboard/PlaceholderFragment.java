@@ -105,18 +105,10 @@ public class PlaceholderFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_expenses_details, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        ExpensesKeyingLayout keyingLayout = rootView.findViewById(R.id.keying_board);
 
-        List<String> test = new ArrayList<>();
-        test.add("Déjeuner");
-        test.add("Petit déjeuner");
-        test.add("Dîner");
-
-        keyingLayout.setKeyingLayout(test, "April 2018");
-
-        /*spinner = (AppCompatSpinner) rootView.findViewById(R.id.spinner);
+        spinner = (AppCompatSpinner) rootView.findViewById(R.id.spinner);
         editText = (AppCompatEditText) rootView.findViewById(R.id.edittext);
         addInputEditText = (AppCompatEditText) rootView.findViewById(R.id.edittext_add_input);
 
@@ -190,7 +182,7 @@ public class PlaceholderFragment extends Fragment
         mCredentialDrive = GoogleAccountCredential.usingOAuth2(
                 // SCOPES_DRIVE
                 getActivity().getApplicationContext(), Arrays.asList(SCOPES))
-                .setBackOff(new ExponentialBackOff());*/
+                .setBackOff(new ExponentialBackOff());
 
 
 
