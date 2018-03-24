@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +21,7 @@ import java.util.List;
 import ruemouffetard.stewardboard.Adapter.MyBaseAdapter;
 import ruemouffetard.stewardboard.Model.ModelBase;
 import ruemouffetard.stewardboard.ViewHolder.BaseViewHolder;
+import ruemouffetard.stewardboard.ViewHolder.EnterpriseCellHolder;
 
 /**
  * Created by admin on 28/01/2018.
@@ -125,11 +127,22 @@ public class ExpensesDetailsFragment extends Fragment {
 
             @Override
             public BaseViewHolder getHolder(View view) {
-                return null;
+                EnterpriseCellHolder cellHolder = new EnterpriseCellHolder(view);
+
+                cellHolder.setOnChildClickedItemListener(new BaseViewHolder.OnChildClickedItemListener<Title>() {
+
+
+                    @Override
+                    public void onChildClickedItem(View view, Title data, int position) {
+                        Toast.makeText(getContext(), "Bonjour les amis", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                return cellHolder;
             }
 
             @Override
-            public void setData(Title data, int position) {
+            public void onItemClicked(Title data, int position) {
 
             }
         });

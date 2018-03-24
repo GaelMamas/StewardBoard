@@ -39,8 +39,9 @@ public class MyBaseAdapter<T extends ModelBase> extends RecyclerView.Adapter<Bas
 
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
-        myAdapterProvider.setData(mDataset.get(position), position);
-
+        myAdapterProvider.onItemClicked(mDataset.get(position), position);
+        holder.setData(mDataset.get(position));
+        holder.onBindViewHolder();
     }
 
     @Override
@@ -58,7 +59,7 @@ public class MyBaseAdapter<T extends ModelBase> extends RecyclerView.Adapter<Bas
 
         BaseViewHolder getHolder(View view);
 
-        void setData(T data, int position);
+        void onItemClicked(T data, int position);
 
     }
 }
