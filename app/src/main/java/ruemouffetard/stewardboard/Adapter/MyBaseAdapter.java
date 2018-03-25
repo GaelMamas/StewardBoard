@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
+import ruemouffetard.stewardboard.Interfaces.AdapterProvider;
 import ruemouffetard.stewardboard.Model.ModelBase;
 import ruemouffetard.stewardboard.ViewHolder.BaseViewHolder;
 
@@ -27,7 +28,6 @@ public class MyBaseAdapter<T extends ModelBase> extends RecyclerView.Adapter<Bas
         this.mDataset = myDataset;
     }
 
-    // Create new views (invoked by the layout manager)
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent,
                                          int viewType) {
@@ -53,13 +53,4 @@ public class MyBaseAdapter<T extends ModelBase> extends RecyclerView.Adapter<Bas
         this.myAdapterProvider = myAdapterProvider;
     }
 
-    public interface AdapterProvider<T>{
-
-        int getLayoutId();
-
-        BaseViewHolder getHolder(View view);
-
-        void onItemClicked(T data, int position);
-
-    }
 }

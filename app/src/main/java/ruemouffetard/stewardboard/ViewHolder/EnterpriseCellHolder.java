@@ -4,13 +4,14 @@ import android.view.View;
 import android.widget.TextView;
 
 import ruemouffetard.stewardboard.ExpensesDetailsFragment;
+import ruemouffetard.stewardboard.Model.Title;
 import ruemouffetard.stewardboard.R;
 
 /**
  * Created by admin on 24/03/2018.
  */
 
-public class EnterpriseCellHolder extends BaseViewHolder<ExpensesDetailsFragment.Title> {
+public class EnterpriseCellHolder extends BaseViewHolder<Title> {
 
     TextView textView;
 
@@ -38,6 +39,7 @@ public class EnterpriseCellHolder extends BaseViewHolder<ExpensesDetailsFragment
     public void onClick(View view) {
         super.onClick(view);
 
+        //TODO WHAT IS GENERIFY FOR?
         if(onChildClickedItemListener != null){
             onChildClickedItemListener.onChildClickedItem(view, data, getAdapterPosition());
         }

@@ -15,11 +15,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import ruemouffetard.stewardboard.Adapter.MyBaseAdapter;
-import ruemouffetard.stewardboard.Model.ModelBase;
+import ruemouffetard.stewardboard.Interfaces.AdapterProvider;
+import ruemouffetard.stewardboard.Model.Title;
 import ruemouffetard.stewardboard.ViewHolder.BaseViewHolder;
 import ruemouffetard.stewardboard.ViewHolder.EnterpriseCellHolder;
 
@@ -109,7 +109,7 @@ public class ExpensesDetailsFragment extends Fragment {
 
         mBalanceTextView.setText("293039€");
 
-        String [] stringsTest = new String[]{"eurhfeir", "erfefef", "eferf", "eferf", "zezer", "zrezer", "rrzer", "zrzr", "zerzer", "zrerr", "rezrzrz", "zrzer", "tryytr", "yyyyytutt"};
+        String[] stringsTest = new String[]{"eurhfeir", "erfefef", "eferf", "eferf", "zezer", "zrezer", "rrzer", "zrzr", "zerzer", "zrerr", "rezrzrz", "zrzer", "tryytr", "yyyyytutt"};
 
         List<Title> titles = new ArrayList<>();
 
@@ -119,7 +119,7 @@ public class ExpensesDetailsFragment extends Fragment {
 
         MyBaseAdapter<Title> myAdapter = new MyBaseAdapter<>(getContext(), titles);
 
-        myAdapter.setMyAdapterProvider(new MyBaseAdapter.AdapterProvider<Title>() {
+        myAdapter.setMyAdapterProvider(new AdapterProvider<Title>() {
             @Override
             public int getLayoutId() {
                 return R.layout.cell_enterprise;
@@ -151,16 +151,4 @@ public class ExpensesDetailsFragment extends Fragment {
         mEnterprisesRecyclerView.setAdapter(myAdapter);
     }
 
-    public static class Title extends ModelBase{
-
-        private String title;
-
-        public Title(String title){
-            this.title = title;
-        }
-
-        public String getTitle(){
-            return title;
-        }
-    }
 }

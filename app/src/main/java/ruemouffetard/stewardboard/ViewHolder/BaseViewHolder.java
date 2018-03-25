@@ -16,10 +16,10 @@ public abstract class BaseViewHolder<T extends ModelBase> extends RecyclerView.V
 
     protected OnChildClickedItemListener onChildClickedItemListener;
 
-    public BaseViewHolder(View v) {
+    BaseViewHolder(View v) {
         super(v);
 
-        this.rootView = rootView;
+        this.rootView = v;
         assignViews(v);
     }
 
