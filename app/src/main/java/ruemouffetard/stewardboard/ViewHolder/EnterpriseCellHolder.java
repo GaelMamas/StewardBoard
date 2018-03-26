@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import ruemouffetard.stewardboard.ExpensesDetailsFragment;
+import ruemouffetard.stewardboard.Model.ProjectInvestmentItem;
 import ruemouffetard.stewardboard.Model.Title;
 import ruemouffetard.stewardboard.R;
 
@@ -11,7 +12,7 @@ import ruemouffetard.stewardboard.R;
  * Created by admin on 24/03/2018.
  */
 
-public class EnterpriseCellHolder extends BaseViewHolder<Title> {
+public class EnterpriseCellHolder extends BaseViewHolder<ProjectInvestmentItem> {
 
     TextView textView;
 
@@ -22,16 +23,16 @@ public class EnterpriseCellHolder extends BaseViewHolder<Title> {
     @Override
     protected void assignViews(View rootView) {
 
-        textView = rootView.findViewById(R.id.text_enterprise);
+        //textView = rootView.findViewById(R.id.text_enterprise);
 
     }
 
     @Override
     public void onBindViewHolder() {
 
-        textView.setText(data.getTitle());
+        //textView.setText(data.getTitle());
 
-        textView.setOnClickListener(this);
+        //textView.setOnClickListener(this);
 
     }
 

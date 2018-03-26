@@ -1,12 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          android:id="@+id/text_enterprise"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_margin="@dimen/space_small"
-          android:padding="@dimen/space_normal"
-          android:textColor="@color/colorPrimary"
-          android:textSize="15sp"
-          tools:text="erieronerotn"/>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                                    xmlns:tools="http://schemas.android.com/tools"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    app:cardCornerRadius="@dimen/space_small"
+                                    app:cardElevation="2dp"
+                                    android:layout_margin="@dimen/space_small">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/space_small">
+
+        <ImageView
+            android:id="@+id/image_enterprise_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="@dimen/space_normal"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/ic_add_24dp"/>
+
+
+        <View
+            android:id="@+id/view_separator"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="@dimen/space_normal"
+            android:layout_marginTop="@dimen/space_normal"
+            android:background="#000"
+            app:layout_constraintTop_toBottomOf="@+id/image_enterprise_icon"/>
+
+        <TextView
+            android:id="@+id/text_enterprise_headlines"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/space_normal"
+            android:layout_marginTop="@dimen/space_normal"
+            android:ellipsize="end"
+            android:lines="3"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view_separator"
+            android:text="Voyage en Egypte erigjerojgoerjgerogjoerajgoerjojerogjerogjerogjerogjer gorjegorejgoergregjrogjrogjreogergireogie roigegoier"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v7.widget.CardView>
 

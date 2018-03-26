@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                                    xmlns:tools="http://schemas.android.com/tools"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="@dimen/space_small">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/space_small">
+
+        <LinearLayout
+            android:id="@+id/layout_expenses_table_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <FrameLayout
+
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/space_normal"
+                android:layout_weight=".6">
+
+                <TextView
+                    android:id="@+id/text_expenses_table_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:lines="2"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:text="Courses alimentaires et les compléments"/>
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/text_expenses_table_balance"
+                android:layout_width="0dp"
+                android:layout_weight=".4"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/space_small"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:lines="2"
+                android:text="eroiereroigferogierogiergegergergergerger"
+                android:textColor="@android:color/holo_orange_light"/>
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view_separator"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/space_small"
+            android:background="#000"
+            app:layout_constraintTop_toBottomOf="@+id/layout_expenses_table_name"/>
+
+
+        <ImageView
+            android:id="@+id/image_expenses_table_bable"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="@dimen/space_small"
+            android:layout_marginTop="@dimen/space_small"
+            android:src="@mipmap/ic_launcher"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_separator"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v7.widget.CardView>
