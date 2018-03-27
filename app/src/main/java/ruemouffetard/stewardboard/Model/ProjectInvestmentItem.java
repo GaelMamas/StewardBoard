@@ -15,6 +15,8 @@ public class ProjectInvestmentItem extends UsualExpenseItem {
 
     private float fund;
 
+    private float finalExpectedAmount;
+
     private List<String> historicDeposits;
 
     private DateTime depositStartedDate;
@@ -57,5 +59,13 @@ public class ProjectInvestmentItem extends UsualExpenseItem {
 
     public void setHistoricDeposits(List<String> historicDeposits) {
         this.historicDeposits = historicDeposits;
+    }
+
+    public float getFinalExpectedAmount() {
+        return finalExpectedAmount;
+    }
+
+    public void setFinalExpectedAmount(float finalExpectedAmount) {
+        this.finalExpectedAmount = finalExpectedAmount;
     }
 }

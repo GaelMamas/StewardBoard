@@ -2,11 +2,16 @@ package ruemouffetard.stewardboard;
 
 import android.text.TextUtils;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+
+import java.io.InputStream;
 import java.text.DateFormatSymbols;
 import java.util.List;
 import java.util.Locale;
 
 import ruemouffetard.stewardboard.Model.ExpenseItem;
+import ruemouffetard.stewardboard.Model.ModelBase;
 
 /**
  * Created by admin on 12/03/2018.
@@ -64,4 +69,25 @@ public class UsefulMehtod {
         String[] monthNames = symbols.getMonths();
         return monthNames[month - 1];
     }
+
+    /*public static List<ModelBase> setDefaultModelData(InputStream inputStream) {
+        try {
+            int size = inputStream.available();
+
+            byte[] buffer = new byte[size];
+
+            inputStream.read(buffer);
+
+            inputStream.close();
+
+            //TODO Build Constants
+            return new Gson().fromJson(new String(buffer, "UTF-8"),
+                    new TypeToken<>() {
+                    }.getType());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }*/
 }
