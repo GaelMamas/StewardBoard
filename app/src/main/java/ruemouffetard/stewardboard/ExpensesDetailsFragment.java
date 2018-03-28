@@ -20,10 +20,9 @@ import java.util.List;
 import ruemouffetard.stewardboard.Adapter.MyBaseAdapter;
 import ruemouffetard.stewardboard.Interfaces.AdapterProvider;
 import ruemouffetard.stewardboard.Model.ExpensesTable;
+import ruemouffetard.stewardboard.Model.ModelBase;
 import ruemouffetard.stewardboard.Model.ProjectInvestmentItem;
-import ruemouffetard.stewardboard.Model.Title;
 import ruemouffetard.stewardboard.ViewHolder.BaseViewHolder;
-import ruemouffetard.stewardboard.ViewHolder.EnterpriseCellHolder;
 import ruemouffetard.stewardboard.ViewHolder.ExpensesTableCellHolder;
 
 /**
@@ -108,65 +107,42 @@ public class ExpensesDetailsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        ExpensesModel expensesModelData = UsefulMehtod.setDefaultModelData(getResources().openRawResource(R.raw.expenses));
+
+        List<ProjectInvestmentItem> enterprisesModelData = UsefulMehtod.setDefaultModelDataList(getResources().openRawResource(R.raw.enterprises));
+
         mHeaderTextView.setText("39409309€");
 
         mBalanceTextView.setText("293039€");
 
-        String[] stringsTest = new String[]{"eurhfeir", "erfefef", "eferf", "eferf", "zezer", "zrezer", "rrzer", "zrzr", "zerzer", "zrerr", "rezrzrz", "zrzer", "tryytr", "yyyyytutt"};
 
-        List<Title> titles = new ArrayList<>();
+        mExpensesRecyclerView.setAdapter(setAdapter(expensesModelData != null ?
+                expensesModelData.getExpensesTables() : null, R.layout.cell_expenses_table));
 
-        for (int i = 0; i < stringsTest.length; i++) {
-            titles.add(new Title(stringsTest[i]));
-        }
+        mEnterprisesRecyclerView.setAdapter(setAdapter(enterprisesModelData,
+                R.layout.cell_enterprise));
+    }
 
-        MyBaseAdapter<Title> myEnterpriseAdapter = new MyBaseAdapter<>(getContext(), titles);
+    private <T extends ModelBase> MyBaseAdapter<T> setAdapter(List<T> modelData, final int resourceId) {
 
-        myEnterpriseAdapter.setMyAdapterProvider(new AdapterProvider<Title>() {
+        MyBaseAdapter<T> adapter = new MyBaseAdapter<>(getContext(),
+                (modelData == null || modelData.size() == 0) ? new ArrayList<T>() : modelData);
+
+        adapter.setMyAdapterProvider(new AdapterProvider<T>() {
             @Override
             public int getLayoutId() {
-                return R.layout.cell_enterprise;
-            }
-
-            @Override
-            public BaseViewHolder getHolder(View view) {
-                EnterpriseCellHolder cellHolder = new EnterpriseCellHolder(view);
-
-                cellHolder.setOnChildClickedItemListener(new BaseViewHolder.OnChildClickedItemListener<ProjectInvestmentItem>() {
-
-
-                    @Override
-                    public void onChildClickedItem(View view, ProjectInvestmentItem data, int position) {
-                        Toast.makeText(getContext(), "Bonjour les amis", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                return cellHolder;
-            }
-
-            @Override
-            public void onItemClicked(Title data, int position) {
-
-            }
-        });
-
-        MyBaseAdapter<Title> myExpensesAdapter = new MyBaseAdapter<>(getContext(), titles);
-
-        myExpensesAdapter.setMyAdapterProvider(new AdapterProvider<Title>() {
-            @Override
-            public int getLayoutId() {
-                return R.layout.cell_expenses_table;
+                return resourceId;
             }
 
             @Override
             public BaseViewHolder getHolder(View view) {
                 ExpensesTableCellHolder cellHolder = new ExpensesTableCellHolder(view);
 
-                cellHolder.setOnChildClickedItemListener(new BaseViewHolder.OnChildClickedItemListener<ExpensesTable>() {
+                cellHolder.setOnChildClickedItemListener(new BaseViewHolder.OnChildClickedItemListener<T>() {
 
 
                     @Override
-                    public void onChildClickedItem(View view, ExpensesTable data, int position) {
+                    public void onChildClickedItem(View view, T data, int position) {
                         Toast.makeText(getContext(), "Bonjour les amis", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -175,13 +151,26 @@ public class ExpensesDetailsFragment extends Fragment {
             }
 
             @Override
-            public void onItemClicked(Title data, int position) {
+            public void onItemClicked(T data, int position) {
 
             }
         });
 
-        mExpensesRecyclerView.setAdapter(myExpensesAdapter);
-        mEnterprisesRecyclerView.setAdapter(myEnterpriseAdapter);
+        return adapter;
+
     }
 
+    private class ExpensesModel extends ModelBase {
+
+        private String sheetName;
+        private List<ExpensesTable> expensesTables;
+
+        public String getSheetName() {
+            return sheetName;
+        }
+
+        public List<ExpensesTable> getExpensesTables() {
+            return expensesTables;
+        }
+    }
 }

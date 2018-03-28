@@ -70,7 +70,7 @@ public class UsefulMehtod {
         return monthNames[month - 1];
     }
 
-    /*public static List<ModelBase> setDefaultModelData(InputStream inputStream) {
+    public static <T extends ModelBase> List<T> setDefaultModelDataList(InputStream inputStream) {
         try {
             int size = inputStream.available();
 
@@ -82,12 +82,33 @@ public class UsefulMehtod {
 
             //TODO Build Constants
             return new Gson().fromJson(new String(buffer, "UTF-8"),
-                    new TypeToken<>() {
+                    new TypeToken<T>() {
                     }.getType());
 
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-    }*/
+    }
+
+    public static <T extends ModelBase> T setDefaultModelData(InputStream inputStream) {
+        try {
+            int size = inputStream.available();
+
+            byte[] buffer = new byte[size];
+
+            inputStream.read(buffer);
+
+            inputStream.close();
+
+            //TODO Build Constants
+            return new Gson().fromJson(new String(buffer, "UTF-8"),
+                    new TypeToken<T>() {
+                    }.getType());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
