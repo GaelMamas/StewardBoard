@@ -19,33 +19,33 @@ import ruemouffetard.stewardboard.Model.ModelBase;
 
 public class UsefulMehtod {
 
-    public static float sumFloatList(List<ExpenseItem> expenseItems){
+    public static float sumFloatList(List<ExpenseItem> expenseItems) {
         float sum = 0F;
-        for (ExpenseItem item: expenseItems)sum += item.getCost();
+        for (ExpenseItem item : expenseItems) sum += item.getCost();
 
         return sum;
     }
 
-    public static ExpenseItem saveExpenseItem(String sheet, String table, String currency, String miscellaneous, float cost){
+    public static ExpenseItem saveExpenseItem(String sheet, String table, String currency, String miscellaneous, float cost) {
 
         ExpenseItem expenseItem = new ExpenseItem();
 
-            expenseItem.setBelongingSheet(TextUtils.isEmpty(sheet)?"":sheet);
+        expenseItem.setBelongingSheet(TextUtils.isEmpty(sheet) ? "" : sheet);
 
-            expenseItem.setBelonginTable(TextUtils.isEmpty(table)?"":table);
+        expenseItem.setBelonginTable(TextUtils.isEmpty(table) ? "" : table);
 
-            expenseItem.setCurrency(TextUtils.isEmpty(currency)?"":currency);
+        expenseItem.setCurrency(TextUtils.isEmpty(currency) ? "" : currency);
 
-            expenseItem.setMiscellaneous(TextUtils.isEmpty(miscellaneous)?"":miscellaneous);
+        expenseItem.setMiscellaneous(TextUtils.isEmpty(miscellaneous) ? "" : miscellaneous);
 
-            expenseItem.setCost(cost<0f?0f:cost);
+        expenseItem.setCost(cost < 0f ? 0f : cost);
 
         return expenseItem;
 
     }
 
 
-    public static String makeUpRequestContent(ExpenseItem savable){
+    public static String makeUpRequestContent(ExpenseItem savable) {
 
         //février 2018;repas avec d'autres;16.45£ d02 Pizza Mateo
 
@@ -70,7 +70,8 @@ public class UsefulMehtod {
         return monthNames[month - 1];
     }
 
-    public static <T extends ModelBase> List<T> setDefaultModelDataList(InputStream inputStream) {
+
+    public static <T extends ModelBase> T setDefaultModelData(InputStream inputStream, TypeToken<T> typeToken) {
         try {
             int size = inputStream.available();
 
@@ -80,31 +81,8 @@ public class UsefulMehtod {
 
             inputStream.close();
 
-            //TODO Build Constants
-            return new Gson().fromJson(new String(buffer, "UTF-8"),
-                    new TypeToken<T>() {
-                    }.getType());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static <T extends ModelBase> T setDefaultModelData(InputStream inputStream) {
-        try {
-            int size = inputStream.available();
-
-            byte[] buffer = new byte[size];
-
-            inputStream.read(buffer);
-
-            inputStream.close();
-
-            //TODO Build Constants
-            return new Gson().fromJson(new String(buffer, "UTF-8"),
-                    new TypeToken<T>() {
-                    }.getType());
+            return new Gson().fromJson(new String(buffer, Constants.UTF8_KEY),
+                    typeToken.getType());
 
         } catch (Exception e) {
             e.printStackTrace();

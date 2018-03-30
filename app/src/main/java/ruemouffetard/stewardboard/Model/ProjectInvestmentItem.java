@@ -19,7 +19,7 @@ public class ProjectInvestmentItem extends UsualExpenseItem {
 
     private List<String> historicDeposits;
 
-    private DateTime depositStartedDate;
+    private long depositStartedDate;
 
     public float getMonthlyWishedAmount() {
         return monthlyWishedAmount;
@@ -45,11 +45,11 @@ public class ProjectInvestmentItem extends UsualExpenseItem {
         this.fund += fund;
     }
 
-    public DateTime getDepositStartedDate() {
+    public long getDepositStartedDate() {
         return depositStartedDate;
     }
 
-    public void setDepositStartedDate(DateTime depositStartedDate) {
+    public void setDepositStartedDate(long depositStartedDate) {
         this.depositStartedDate = depositStartedDate;
     }
 
@@ -68,4 +68,5 @@ public class ProjectInvestmentItem extends UsualExpenseItem {
     public void setFinalExpectedAmount(float finalExpectedAmount) {
         this.finalExpectedAmount = finalExpectedAmount;
     }
+
 }

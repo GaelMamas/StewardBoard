@@ -13,5 +13,6 @@
     <string name="keying_expense_occurred_date">Made on %1$s</string>
     <string name="keying_expense_save">Save</string>
     <string name="keying_successfully_completed">Keying was successfully completed</string>
-    <string name="checkup_expenses_table_balance">Balance : %s</string>
+    <string name="checkup_expenses_central_budget">Forecast Expenses Budget: %s %.3f</string>
+    <string name="checkup_expenses_table_balance">Leftovers after used : %1$s %2$.3f</string>
 </resources>

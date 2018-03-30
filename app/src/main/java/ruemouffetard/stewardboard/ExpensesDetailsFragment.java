@@ -14,16 +14,23 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.common.reflect.TypeToken;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import ruemouffetard.stewardboard.Adapter.MyBaseAdapter;
 import ruemouffetard.stewardboard.Interfaces.AdapterProvider;
+import ruemouffetard.stewardboard.Model.ExpensesSheet;
 import ruemouffetard.stewardboard.Model.ExpensesTable;
 import ruemouffetard.stewardboard.Model.ModelBase;
 import ruemouffetard.stewardboard.Model.ProjectInvestmentItem;
+import ruemouffetard.stewardboard.Model.UsualExpenseItem;
 import ruemouffetard.stewardboard.ViewHolder.BaseViewHolder;
+import ruemouffetard.stewardboard.ViewHolder.EnterpriseCellHolder;
 import ruemouffetard.stewardboard.ViewHolder.ExpensesTableCellHolder;
+import ruemouffetard.stewardboard.databinding.CellEnterpriseBinding;
+import ruemouffetard.stewardboard.databinding.CellExpensesTableBinding;
 
 /**
  * Created by admin on 28/01/2018.
@@ -107,42 +114,67 @@ public class ExpensesDetailsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ExpensesModel expensesModelData = UsefulMehtod.setDefaultModelData(getResources().openRawResource(R.raw.expenses));
+        Expenses expensesSheet = UsefulMehtod.setDefaultModelData(getResources().openRawResource(R.raw.expenses), new TypeToken<Expenses>() {
+        });
 
-        List<ProjectInvestmentItem> enterprisesModelData = UsefulMehtod.setDefaultModelDataList(getResources().openRawResource(R.raw.enterprises));
+        Enterprises enterprises = UsefulMehtod.setDefaultModelData(getResources().openRawResource(R.raw.enterprises), new TypeToken<Enterprises>() {
+        });
 
-        mHeaderTextView.setText("39409309€");
+        ExpensesBudgeting expensesBudgeting = UsefulMehtod.setDefaultModelData(getResources().openRawResource(R.raw.usual_expense_items), new TypeToken<ExpensesBudgeting>() {
+        });
 
-        mBalanceTextView.setText("293039€");
+
+        mExpensesRecyclerView.setAdapter(setAdapterExpenses(expensesSheet != null ?
+                expensesSheet.getExpensesSheet() != null ?
+                        expensesSheet.getExpensesSheet().getExpensesTables() : null : null));
+
+        mEnterprisesRecyclerView.setAdapter(setAdapterEnterprises(enterprises != null ? enterprises.getProjectInvestmentItems() : null));
 
 
-        mExpensesRecyclerView.setAdapter(setAdapter(expensesModelData != null ?
-                expensesModelData.getExpensesTables() : null, R.layout.cell_expenses_table));
+        if(expensesBudgeting != null && expensesBudgeting.getUsualExpenseItems() != null && expensesBudgeting.getUsualExpenseItems().size() > 0) {
 
-        mEnterprisesRecyclerView.setAdapter(setAdapter(enterprisesModelData,
-                R.layout.cell_enterprise));
+            float centralExecutionBudget = 0, centralLeftovers = 0;
+            //TODO FETCH the currency from the preferences
+            String currency = expensesBudgeting.getUsualExpenseItems().get(0).getCurrency();
+
+            for (UsualExpenseItem usualExpenseItem: expensesBudgeting.getUsualExpenseItems()){
+
+                centralExecutionBudget += usualExpenseItem.getMonthlyDefinedAmount();
+                centralLeftovers += usualExpenseItem.getLeftOvers();
+
+            }
+
+            mHeaderTextView.setText(getString(R.string.checkup_expenses_central_budget, currency,centralExecutionBudget));
+
+            mBalanceTextView.setText(getString(R.string.checkup_expenses_central_budget, currency, centralLeftovers));
+
+        }
     }
 
-    private <T extends ModelBase> MyBaseAdapter<T> setAdapter(List<T> modelData, final int resourceId) {
+    private MyBaseAdapter<ExpensesTable, CellExpensesTableBinding> setAdapterExpenses(List<ExpensesTable> modelData) {
 
-        MyBaseAdapter<T> adapter = new MyBaseAdapter<>(getContext(),
-                (modelData == null || modelData.size() == 0) ? new ArrayList<T>() : modelData);
+        MyBaseAdapter<ExpensesTable, CellExpensesTableBinding> adapter = new MyBaseAdapter<>(getContext(),
+                (modelData == null || modelData.size() == 0) ? new ArrayList<ExpensesTable>() : modelData);
 
-        adapter.setMyAdapterProvider(new AdapterProvider<T>() {
+        adapter.setMyAdapterProvider(new AdapterProvider<ExpensesTable, CellExpensesTableBinding>() {
             @Override
             public int getLayoutId() {
-                return resourceId;
+                return R.layout.cell_expenses_table;
             }
 
             @Override
-            public BaseViewHolder getHolder(View view) {
-                ExpensesTableCellHolder cellHolder = new ExpensesTableCellHolder(view);
+            public int getVariableId() {
+                return BR.expensesTable;
+            }
 
-                cellHolder.setOnChildClickedItemListener(new BaseViewHolder.OnChildClickedItemListener<T>() {
+            @Override
+            public BaseViewHolder getHolder(CellExpensesTableBinding binding) {
+                ExpensesTableCellHolder cellHolder = new ExpensesTableCellHolder(binding);
 
+                cellHolder.setOnChildClickedItemListener(new BaseViewHolder.OnChildClickedItemListener<ExpensesTable>() {
 
                     @Override
-                    public void onChildClickedItem(View view, T data, int position) {
+                    public void onChildClickedItem(View view, ExpensesTable data, int position) {
                         Toast.makeText(getContext(), "Bonjour les amis", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -151,7 +183,7 @@ public class ExpensesDetailsFragment extends Fragment {
             }
 
             @Override
-            public void onItemClicked(T data, int position) {
+            public void onItemClicked(ExpensesTable data, int position) {
 
             }
         });
@@ -160,17 +192,72 @@ public class ExpensesDetailsFragment extends Fragment {
 
     }
 
-    private class ExpensesModel extends ModelBase {
+    private MyBaseAdapter<ProjectInvestmentItem, CellEnterpriseBinding> setAdapterEnterprises(List<ProjectInvestmentItem> modelData) {
 
-        private String sheetName;
-        private List<ExpensesTable> expensesTables;
+        MyBaseAdapter<ProjectInvestmentItem, CellEnterpriseBinding> adapter = new MyBaseAdapter<>(getContext(),
+                (modelData == null || modelData.size() == 0) ? new ArrayList<ProjectInvestmentItem>() : modelData);
 
-        public String getSheetName() {
-            return sheetName;
+        adapter.setMyAdapterProvider(new AdapterProvider<ProjectInvestmentItem, CellEnterpriseBinding>() {
+            @Override
+            public int getLayoutId() {
+                return R.layout.cell_enterprise;
+            }
+
+            @Override
+            public int getVariableId() {
+                return BR.enterprise;
+            }
+
+            @Override
+            public BaseViewHolder getHolder(CellEnterpriseBinding binding) {
+                EnterpriseCellHolder cellHolder = new EnterpriseCellHolder(binding);
+
+                cellHolder.setOnChildClickedItemListener(new BaseViewHolder.OnChildClickedItemListener<ProjectInvestmentItem>() {
+
+
+                    @Override
+                    public void onChildClickedItem(View view, ProjectInvestmentItem data, int position) {
+                        Toast.makeText(getContext(), "Bonjour les amis", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                return cellHolder;
+            }
+
+            @Override
+            public void onItemClicked(ProjectInvestmentItem data, int position) {
+
+            }
+        });
+
+        return adapter;
+
+    }
+
+    public static class Enterprises extends ModelBase {
+
+        List<ProjectInvestmentItem> projectInvestmentItems;
+
+        public List<ProjectInvestmentItem> getProjectInvestmentItems() {
+            return projectInvestmentItems;
         }
+    }
 
-        public List<ExpensesTable> getExpensesTables() {
-            return expensesTables;
+    public static class Expenses extends ModelBase {
+
+        ExpensesSheet expensesSheet;
+
+        public ExpensesSheet getExpensesSheet() {
+            return expensesSheet;
+        }
+    }
+
+    public static class ExpensesBudgeting extends ModelBase{
+
+        List<UsualExpenseItem> usualExpenseItems;
+
+        public List<UsualExpenseItem> getUsualExpenseItems() {
+            return usualExpenseItems;
         }
     }
 }

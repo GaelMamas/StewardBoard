@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <variable
+            name="enterprise"
+            type="ruemouffetard.stewardboard.Model.ProjectInvestmentItem"/>
+
+    </data>
+
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
                                     xmlns:app="http://schemas.android.com/apk/res-auto"
                                     xmlns:tools="http://schemas.android.com/tools"
@@ -49,9 +59,11 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view_separator"
-            android:text="Voyage en Egypte erigjerojgoerjgerogjoerajgoerjojerogjerogjerogjerogjer gorjegorejgoergregjrogjrogjreogergireogie roigegoier"/>
+            android:text="@{enterprise.projectType}"/>
 
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>
+
+</layout>
 

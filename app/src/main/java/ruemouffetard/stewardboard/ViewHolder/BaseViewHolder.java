@@ -1,5 +1,6 @@
 package ruemouffetard.stewardboard.ViewHolder;
 
+import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -9,27 +10,26 @@ import ruemouffetard.stewardboard.Model.ModelBase;
  * Created by admin on 23/03/2018.
  */
 
-public abstract class BaseViewHolder<T extends ModelBase> extends RecyclerView.ViewHolder implements View.OnClickListener {
+public abstract class BaseViewHolder<T extends ModelBase,VDB extends ViewDataBinding> extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    private View rootView;
+    protected VDB mBinding;
     protected T data;
+
 
     protected OnChildClickedItemListener onChildClickedItemListener;
 
-    BaseViewHolder(View v) {
-        super(v);
+    BaseViewHolder(VDB binding) {
+        super(binding.getRoot());
 
-        this.rootView = v;
-        assignViews(v);
+        this.mBinding = binding;
     }
-
-    protected abstract void assignViews(View rootView);
 
 
     public abstract void onBindViewHolder();
 
-    public void setData(T data) {
-        this.data = data;
+    public void setData(int variableId, T data) {
+        mBinding.setVariable(variableId, data);
+        mBinding.executePendingBindings();
     }
 
     public void setOnChildClickedItemListener(OnChildClickedItemListener onChildClickedItemListener) {

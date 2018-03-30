@@ -3,29 +3,20 @@ package ruemouffetard.stewardboard.ViewHolder;
 import android.view.View;
 import android.widget.TextView;
 
-import ruemouffetard.stewardboard.ExpensesDetailsFragment;
 import ruemouffetard.stewardboard.Model.ProjectInvestmentItem;
-import ruemouffetard.stewardboard.Model.Title;
-import ruemouffetard.stewardboard.R;
+import ruemouffetard.stewardboard.databinding.CellEnterpriseBinding;
 
 /**
  * Created by admin on 24/03/2018.
  */
 
-public class EnterpriseCellHolder extends BaseViewHolder<ProjectInvestmentItem> {
+public class EnterpriseCellHolder extends BaseViewHolder<ProjectInvestmentItem, CellEnterpriseBinding> {
 
-    TextView textView;
 
-    public EnterpriseCellHolder(View view) {
-        super(view);
+    public EnterpriseCellHolder(CellEnterpriseBinding binding) {
+        super(binding);
     }
 
-    @Override
-    protected void assignViews(View rootView) {
-
-        //textView = rootView.findViewById(R.id.text_enterprise);
-
-    }
 
     @Override
     public void onBindViewHolder() {
@@ -41,7 +32,7 @@ public class EnterpriseCellHolder extends BaseViewHolder<ProjectInvestmentItem> 
         super.onClick(view);
 
         //TODO WHAT IS GENERIFY FOR?
-        if(onChildClickedItemListener != null){
+        if (onChildClickedItemListener != null) {
             onChildClickedItemListener.onChildClickedItem(view, data, getAdapterPosition());
         }
     }

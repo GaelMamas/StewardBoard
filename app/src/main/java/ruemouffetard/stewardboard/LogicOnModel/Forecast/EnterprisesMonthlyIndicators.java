@@ -1,5 +1,6 @@
 package ruemouffetard.stewardboard.LogicOnModel.Forecast;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
 
@@ -58,7 +59,7 @@ public class EnterprisesMonthlyIndicators {
 
     public float workoutForecastFundUpToNow(ProjectInvestmentItem investmentItem){
 
-        Months months = Months.monthsBetween(investmentItem.getDepositStartedDate(),
+        Months months = Months.monthsBetween(new DateTime(investmentItem.getDepositStartedDate()),
                 LocalDateTime.now().toDateTime());
 
 

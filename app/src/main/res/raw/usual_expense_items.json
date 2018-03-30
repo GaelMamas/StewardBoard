@@ -1,37 +1,39 @@
-[
-   {
-     "monthlyDefinedAccount":160,
-     "currency":"€",
-     "title":"Courses alimentaire",
-     "belongingSheet":"Known Expenses",
-     "leftOvers":23.45
-   },
-   {
-     "monthlyDefinedAccount":160,
-     "currency":"€",
-     "title":"Déjeuner",
-     "belongingSheet":"Known Expenses",
-     "leftOvers":23.45
-   },
-   {
-     "monthlyDefinedAccount":160,
-     "currency":"€",
-     "title":"Transport",
-     "belongingSheet":"Known Expenses",
-     "leftOvers":23.45
-   },
-   {
-     "monthlyDefinedAccount":160,
-     "currency":"€",
-     "title":"Shopping",
-     "belongingSheet":"Known Expenses",
-     "leftOvers":23.45
-   },
-   {
-     "monthlyDefinedAccount":160,
-     "currency":"€",
-     "title":"Repas avec d\'autres",
-     "belongingSheet":"Known Expenses",
-     "leftOvers":23.45
-   },
- ]
+{
+  "usualExpenseItems": [
+    {
+      "monthlyDefinedAmount": 160,
+      "currency": "€",
+      "title": "Courses alimentaire",
+      "belongingSheet": "Known Expenses",
+      "leftOvers": 23.45
+    },
+    {
+      "monthlyDefinedAmount": 200,
+      "currency": "€",
+      "title": "Déjeuner",
+      "belongingSheet": "Known Expenses",
+      "leftOvers": 23.45
+    },
+    {
+      "monthlyDefinedAmount": 75.2,
+      "currency": "€",
+      "title": "Transport",
+      "belongingSheet": "Known Expenses",
+      "leftOvers": 23.45
+    },
+    {
+      "monthlyDefinedAmount": 84,
+      "currency": "€",
+      "title": "Shopping",
+      "belongingSheet": "Known Expenses",
+      "leftOvers": 23.45
+    },
+    {
+      "monthlyDefinedAmount": 250,
+      "currency": "€",
+      "title": "Repas avec d\'autres",
+      "belongingSheet": "Known Expenses",
+      "leftOvers": 23.45
+    }
+  ]
+}
