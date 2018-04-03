@@ -21,6 +21,8 @@ public class ProjectInvestmentItem extends UsualExpenseItem {
 
     private long depositStartedDate;
 
+    private String status;
+
     public float getMonthlyWishedAmount() {
         return monthlyWishedAmount;
     }
@@ -69,4 +71,11 @@ public class ProjectInvestmentItem extends UsualExpenseItem {
         this.finalExpectedAmount = finalExpectedAmount;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

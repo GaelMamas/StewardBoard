@@ -10,6 +10,7 @@
       "projectType": "Visite&Vacances",
       "monthlyWishedAmount": 12,
       "depositStartedDate": 12338938494854934,
+      "status": "PLANNING",
       "historicDeposits": [
         "12/17",
         "01/18",
@@ -25,6 +26,7 @@
       "finalExpectedAmount": 800.0,
       "projectType": "Veille tech",
       "monthlyWishedAmount": 12,
+      "status": "RECRUITING",
       "depositStartedDate": 13244534545434523,
       "historicDeposits": [
         "12/17",
@@ -41,6 +43,7 @@
       "finalExpectedAmount": 2000.0,
       "projectType": "Transport",
       "monthlyWishedAmount": 12.0,
+      "status": "ENGAGING",
       "depositStartedDate": 153445656434534534,
       "historicDeposits": [
         "12/17",
@@ -57,6 +60,7 @@
       "finalExpectedAmount": 500.0,
       "projectType": "Visite&Vacances",
       "monthlyWishedAmount": 12.0,
+      "status": "FINISHED",
       "depositStartedDate": 17434564332566654,
       "historicDeposits": [
         "12/17",
@@ -73,6 +77,7 @@
       "finalExpectedAmount": 1000.0,
       "projectType": "Visite&Vacances",
       "monthlyWishedAmount": 12.0,
+      "status": "FINISHED",
       "depositStartedDate": 1853356767446767544,
       "historicDeposits": [
         "12/17",

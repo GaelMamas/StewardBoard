@@ -10,8 +10,6 @@ import android.view.ViewGroup;
 
 public class BudgetArbitrationLayout extends ViewGroup {
 
-
-
     public BudgetArbitrationLayout(Context context) {
         super(context, null);
     }
