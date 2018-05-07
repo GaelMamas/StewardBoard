@@ -1,5 +1,6 @@
 package ruemouffetard.stewardboard;
 
+import android.graphics.PointF;
 import android.text.TextUtils;
 
 import com.google.common.reflect.TypeToken;
@@ -88,5 +89,19 @@ public class UsefulMehtod {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static PointF getSymmetryPointWithRespectToAPoint(PointF landMarkPoint, PointF targetedPoint){
+
+        return new PointF(2 * landMarkPoint.x - targetedPoint.x, 2 * landMarkPoint.y - targetedPoint.y);
+    }
+
+    public  static  PointF getSymmetryWithRespectToARight(PointF rightVector, PointF belongingPoint, PointF targetedPoint){
+
+        float symmetryConstant = 2 * (rightVector.x * (targetedPoint.y - belongingPoint.y) - rightVector.y * (targetedPoint.x - belongingPoint.x))
+                /(rightVector.x * rightVector.x + rightVector.y * rightVector.y);
+
+        return new PointF(targetedPoint.x + symmetryConstant * rightVector.y,
+                targetedPoint.y - symmetryConstant * rightVector.x);
     }
 }
