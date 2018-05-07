@@ -28,7 +28,10 @@ public class WeighBalance extends View {
 
     protected float h0, groundWingWidth, beamWingWidth, b1, trayWingWidth;
     protected double alpha0;
+    protected float newAlpha;
     protected PointF M0, M1, M2, M3, primeM3;
+
+    private int time = 0;
 
     protected Choreographer choreographer = Choreographer.getInstance();
 
@@ -43,6 +46,8 @@ public class WeighBalance extends View {
     public WeighBalance(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
+        this.newAlpha = 0;
+        this.time = 0;
         init();
     }
 
@@ -72,8 +77,9 @@ public class WeighBalance extends View {
 
         schemeGround();
         schemeThreshold();
-        schemeBeam();
-        schemeTrays(50);
+        schemeDynamicBeam(-(float) Math.PI / 6);
+        //schemeBeam();
+        // schemeTrays(50);
 
     }
 
@@ -124,7 +130,7 @@ public class WeighBalance extends View {
         canvas.drawPath(groundPath, groundPaint);
         canvas.drawPath(thresholdPath, thresholdPaint);
         canvas.drawPath(beamPath, beamPaint);
-        canvas.drawPath(trayPath, trayPaint);
+        //canvas.drawPath(trayPath, trayPaint);
 
     }
 
@@ -164,6 +170,20 @@ public class WeighBalance extends View {
 
         beamPath.moveTo(M1.x, M1.y);
         beamPath.lineTo(2 * M0.x - M1.x, 2 * M0.y - M1.y);
+
+    }
+
+    private void schemeDynamicBeam(float newAlph0) {
+
+        this.beamPath = new Path();
+
+        PointF M11 = new PointF((float) (M0.x + beamWingWidth * Math.cos(newAlpha)),
+                (float) (M0.y + beamWingWidth * Math.sin(newAlpha)));
+
+        beamPath.moveTo(M11.x, M11.y);
+        beamPath.lineTo(2 * M0.x - M11.x, 2 * M0.y - M11.y);
+
+        choreographer.postFrameCallback(frameCallback);
 
     }
 
@@ -219,21 +239,25 @@ public class WeighBalance extends View {
 
     }
 
-
     private Choreographer.FrameCallback frameCallback = new Choreographer.FrameCallback() {
         @Override
         public void doFrame(long l) {
 
+            newAlpha = (float) (time * Math.PI/6000);
+
             invalidate();
 
-            if(Math.sin(alpha0) < Math.sqrt(3/2)){
+            if (time <= 1000) {
 
-                alpha0 ++;
+                time += 1;
+
                 Choreographer choreographer = Choreographer.getInstance();
                 choreographer.postFrameCallback(frameCallback);
 
-            }else if(Math.sin(alpha0) > -Math.sqrt(3/2)){
-                alpha0--;
+            } else {
+
+                time = 1000;
+                choreographer.removeFrameCallback(frameCallback);
 
             }
 
@@ -246,12 +270,12 @@ public class WeighBalance extends View {
         super.invalidate();
     }
 
-    public void clearAndRedraw(){
+    public void clearAndRedraw() {
         //TODO things
         choreographer.postFrameCallback(frameCallback);
     }
 
-    public void pause(){
+    public void pause() {
         alpha0 = 0;
         invalidate();
         choreographer.removeFrameCallback(frameCallback);
