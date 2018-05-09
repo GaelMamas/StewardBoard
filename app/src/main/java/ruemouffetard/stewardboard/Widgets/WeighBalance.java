@@ -30,6 +30,7 @@ public class WeighBalance extends View {
     protected double alpha0;
     protected float newAlpha;
     protected PointF M0, M1, M2, M3, primeM3;
+    protected PointF M11;
 
     private int time = 0;
 
@@ -77,8 +78,9 @@ public class WeighBalance extends View {
 
         schemeGround();
         schemeThreshold();
-        schemeDynamicBeam(-(float) Math.PI / 6);
+        schemeDynamicBeam();
         //schemeBeam();
+        schemeDynamicTrays(50);
         // schemeTrays(50);
 
     }
@@ -130,7 +132,7 @@ public class WeighBalance extends View {
         canvas.drawPath(groundPath, groundPaint);
         canvas.drawPath(thresholdPath, thresholdPaint);
         canvas.drawPath(beamPath, beamPaint);
-        //canvas.drawPath(trayPath, trayPaint);
+        canvas.drawPath(trayPath, trayPaint);
 
     }
 
@@ -173,11 +175,11 @@ public class WeighBalance extends View {
 
     }
 
-    private void schemeDynamicBeam(float newAlph0) {
+    private void schemeDynamicBeam() {
 
         this.beamPath = new Path();
 
-        PointF M11 = new PointF((float) (M0.x + beamWingWidth * Math.cos(newAlpha)),
+        M11 = new PointF((float) (M0.x + beamWingWidth * Math.cos(newAlpha)),
                 (float) (M0.y + beamWingWidth * Math.sin(newAlpha)));
 
         beamPath.moveTo(M11.x, M11.y);
@@ -207,6 +209,29 @@ public class WeighBalance extends View {
 
     }
 
+    protected void schemeDynamicTrays(float traySupport){
+
+        trayPath = new Path();
+
+        double radius = traySupport / Math.sin(alpha0);
+
+        double lambda = alpha0;
+
+        M3 = new PointF((float) (M11.x + radius * Math.cos(lambda - newAlpha)),
+                (float) (M11.y - radius * Math.sin(lambda - newAlpha)));
+
+        primeM3 = new PointF((float) (M11.x - radius * Math.cos(lambda + newAlpha)),
+                (float) (M11.y - radius * Math.sin(lambda + newAlpha)));
+
+        PointF rightVector = new PointF((M3.x + primeM3.x) / 2 - M11.x, (M3.y + primeM3.y) / 2 - M11.y);
+
+        schemeDynamicATray(M11, M3, primeM3, 20);
+        schemeDynamicATray(new PointF(2 * M0.x - M11.x, 2 * M0.y - M11.y),
+                UsefulMehtod.getSymmetryWithRespectToARight(rightVector, M0, M3),
+                UsefulMehtod.getSymmetryWithRespectToARight(rightVector, M0, primeM3), 20);
+
+    }
+
     protected void schemeATray(PointF startDrawingPoint, PointF trayRightEndPoint, PointF trayLeftEndPoint, float edging) {
 
         trayPath.moveTo(startDrawingPoint.x, startDrawingPoint.y);
@@ -220,6 +245,22 @@ public class WeighBalance extends View {
 
         trayPath.moveTo(trayLeftEndPoint.x, trayLeftEndPoint.y);
         trayPath.lineTo((float) (trayLeftEndPoint.x + edging * Math.sin(alpha0)), (float) (trayLeftEndPoint.y - edging * Math.cos(alpha0)));
+    }
+
+    protected void schemeDynamicATray(PointF startDrawingPoint, PointF trayRightEndPoint, PointF trayLeftEndPoint, float edging) {
+
+        trayPath.moveTo(startDrawingPoint.x, startDrawingPoint.y);
+        trayPath.lineTo((trayRightEndPoint.x + trayLeftEndPoint.x) / 2, (trayRightEndPoint.y + trayLeftEndPoint.y) / 2);
+
+        trayPath.moveTo(trayRightEndPoint.x, trayRightEndPoint.y);
+        trayPath.lineTo(trayLeftEndPoint.x, trayLeftEndPoint.y);
+
+        trayPath.moveTo(trayRightEndPoint.x, trayRightEndPoint.y);
+        trayPath.lineTo((float) (trayRightEndPoint.x + edging * Math.sin(newAlpha)), (float) (trayRightEndPoint.y - edging * Math.cos(newAlpha)));
+
+        trayPath.moveTo(trayLeftEndPoint.x, trayLeftEndPoint.y);
+        trayPath.lineTo((float) (trayLeftEndPoint.x + edging * Math.sin(newAlpha)), (float) (trayLeftEndPoint.y - edging * Math.cos(newAlpha)));
+
     }
 
     protected void setUpCornerEffet(int pathIndex, float radius) {
