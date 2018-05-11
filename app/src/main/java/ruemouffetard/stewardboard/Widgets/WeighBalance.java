@@ -21,6 +21,7 @@ import ruemouffetard.stewardboard.UsefulMehtod;
 public class WeighBalance extends View {
 
     protected final static int GROUND = 0, THRESHOLD = 1, BEAM = 2, TRAY = 3;
+    protected final static float EARTH_GRAVITY = 9.81f;
 
 
     protected Path groundPath, thresholdPath, beamPath, trayPath;
@@ -33,6 +34,7 @@ public class WeighBalance extends View {
     protected PointF M11;
 
     private int time = 0;
+    private double oscillationPeriod;
 
     protected Choreographer choreographer = Choreographer.getInstance();
 
@@ -74,6 +76,8 @@ public class WeighBalance extends View {
 
         this.M1 = new PointF(M0.x + (float) (h0 / Math.tan(alpha0)), M0.y + h0);
         this.M2 = new PointF(M0.x - b1, M0.y + (float) (b1 / Math.tan(beta)));
+
+        this.oscillationPeriod = Math.sqrt(beamWingWidth/EARTH_GRAVITY) * Math.PI/2;
 
 
         schemeGround();
@@ -209,7 +213,7 @@ public class WeighBalance extends View {
 
     }
 
-    protected void schemeDynamicTrays(float traySupport){
+    protected void schemeDynamicTrays(float traySupport) {
 
         trayPath = new Path();
 
@@ -280,24 +284,52 @@ public class WeighBalance extends View {
 
     }
 
+    protected double endingAngle = 0, constant = 0;
+
     private Choreographer.FrameCallback frameCallback = new Choreographer.FrameCallback() {
         @Override
         public void doFrame(long l) {
 
-            newAlpha = (float) (time * Math.PI/6000);
+
+            /*if (time == 0) {
+                if (newAlpha == alpha0) {
+
+                    endingAngle = - alpha0;
+                    constant = alpha0;
+
+                } else if (newAlpha == -alpha0) {
+
+                    endingAngle = alpha0;
+                    constant = -alpha0;
+
+                } else {
+
+                   endingAngle = alpha0;
+
+                }
+            }
+
+            newAlpha = (float) (time * endingAngle / 1000 + constant);*/
+
+            if(time <=  oscillationPeriod) {
+                newAlpha = (float) (alpha0 * Math.sin(time * Math.sqrt(EARTH_GRAVITY / (beamWingWidth))));
+            }else{
+                newAlpha = (float) (alpha0 * Math.abs(Math.sin(time * Math.sqrt(EARTH_GRAVITY / (beamWingWidth))))
+                                    * Math.exp(2 * time - oscillationPeriod));
+            }
 
             invalidate();
 
-            if (time <= 1000) {
+            if (time <= 10 * oscillationPeriod) {
 
-                time += 1;
+                time += 25;
 
                 Choreographer choreographer = Choreographer.getInstance();
                 choreographer.postFrameCallback(frameCallback);
 
             } else {
 
-                time = 1000;
+                time = (int) (10 * oscillationPeriod);
                 choreographer.removeFrameCallback(frameCallback);
 
             }
@@ -305,19 +337,22 @@ public class WeighBalance extends View {
         }
     };
 
+
+    public void playWeighBalance() {
+
+        this.time = 0;
+
+        choreographer.postFrameCallback(frameCallback);
+    }
+
     @Override
     public void invalidate() {
         init();
         super.invalidate();
     }
 
-    public void clearAndRedraw() {
-        //TODO things
-        choreographer.postFrameCallback(frameCallback);
-    }
-
     public void pause() {
-        alpha0 = 0;
+        time = 1000;
         invalidate();
         choreographer.removeFrameCallback(frameCallback);
     }

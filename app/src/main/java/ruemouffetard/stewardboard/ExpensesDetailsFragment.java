@@ -29,6 +29,7 @@ import ruemouffetard.stewardboard.Model.UsualExpenseItem;
 import ruemouffetard.stewardboard.ViewHolder.BaseViewHolder;
 import ruemouffetard.stewardboard.ViewHolder.EnterpriseCellHolder;
 import ruemouffetard.stewardboard.ViewHolder.ExpensesTableCellHolder;
+import ruemouffetard.stewardboard.Widgets.WeighBalance;
 import ruemouffetard.stewardboard.databinding.CellEnterpriseBinding;
 import ruemouffetard.stewardboard.databinding.CellExpensesTableBinding;
 
@@ -42,6 +43,8 @@ public class ExpensesDetailsFragment extends Fragment {
     private TextView mHeaderTextView, mBalanceTextView;
     private RecyclerView mExpensesRecyclerView, mEnterprisesRecyclerView;
     private ProgressBar mProgressBar;
+
+    private WeighBalance weighBalance;
 
     public ExpensesDetailsFragment() {
     }
@@ -80,6 +83,8 @@ public class ExpensesDetailsFragment extends Fragment {
 
         mProgressBar = rootView.findViewById(R.id.progressbar_expense_details);
 
+        weighBalance = rootView.findViewById(R.id.view_enterprise_state);
+
     }
 
     private void populateViews(Bundle savedInstanceState) {
@@ -96,15 +101,19 @@ public class ExpensesDetailsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 mProgressBar.setVisibility(View.VISIBLE);
-                view.setEnabled(false);
+                //view.setEnabled(false);
 
-                new Handler().postDelayed(new Runnable() {
+                if(weighBalance != null){
+                    weighBalance.playWeighBalance();
+                }
+
+               /* new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         mProgressBar.setVisibility(View.GONE);
                         mBalanceTextView.setEnabled(true);
                     }
-                }, 5000);
+                }, 1000);*/
             }
         });
         //TODO END TEST
