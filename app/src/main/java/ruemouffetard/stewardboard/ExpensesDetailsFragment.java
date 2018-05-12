@@ -100,7 +100,7 @@ public class ExpensesDetailsFragment extends Fragment {
 
             @Override
             public void onClick(View view) {
-                mProgressBar.setVisibility(View.VISIBLE);
+                //mProgressBar.setVisibility(View.VISIBLE);
                 //view.setEnabled(false);
 
                 if(weighBalance != null){

@@ -9,6 +9,7 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Choreographer;
 import android.view.View;
 
@@ -22,6 +23,7 @@ public class WeighBalance extends View {
 
     protected final static int GROUND = 0, THRESHOLD = 1, BEAM = 2, TRAY = 3;
     protected final static float EARTH_GRAVITY = 9.81f;
+    protected final static float SLOW_DOWN_PENDULUM_MOVE = 5000f;
 
 
     protected Path groundPath, thresholdPath, beamPath, trayPath;
@@ -35,6 +37,8 @@ public class WeighBalance extends View {
 
     private int time = 0;
     private double oscillationPeriod;
+    protected double pulsation;
+    protected float standardMass, perfectableMass;
 
     protected Choreographer choreographer = Choreographer.getInstance();
 
@@ -77,7 +81,20 @@ public class WeighBalance extends View {
         this.M1 = new PointF(M0.x + (float) (h0 / Math.tan(alpha0)), M0.y + h0);
         this.M2 = new PointF(M0.x - b1, M0.y + (float) (b1 / Math.tan(beta)));
 
-        this.oscillationPeriod = 5000 * Math.sqrt(beamWingWidth/EARTH_GRAVITY) * Math.PI/2;
+
+        try {
+            this.pulsation = Math.sqrt(Math.abs((standardMass - perfectableMass) / (standardMass + perfectableMass))
+                    * EARTH_GRAVITY / (beamWingWidth * SLOW_DOWN_PENDULUM_MOVE));
+
+            this.oscillationPeriod = SLOW_DOWN_PENDULUM_MOVE * Math
+                    .sqrt(Math.abs((standardMass - perfectableMass) / (standardMass + perfectableMass)) * beamWingWidth / EARTH_GRAVITY) * Math.PI / 2;
+
+
+        } catch (ArithmeticException e) {
+            this.pulsation = 0;
+            this.oscillationPeriod = 0;
+            Log.i(getClass().getSimpleName(), "masses null");
+        }
 
 
         schemeGround();
@@ -284,53 +301,40 @@ public class WeighBalance extends View {
 
     }
 
-    protected double endingAngle = 0, constant = 0;
 
     private Choreographer.FrameCallback frameCallback = new Choreographer.FrameCallback() {
         @Override
         public void doFrame(long l) {
 
 
-            /*if (time == 0) {
-                if (newAlpha == alpha0) {
-
-                    endingAngle = - alpha0;
-                    constant = alpha0;
-
-                } else if (newAlpha == -alpha0) {
-
-                    endingAngle = alpha0;
-                    constant = -alpha0;
-
-                } else {
-
-                   endingAngle = alpha0;
-
+            if (time <= oscillationPeriod) {
+                    newAlpha = (float) (alpha0 * Math.sin(time * pulsation + perfectableMass < standardMass ? 0:Math.PI));
+            } else {
+                if(perfectableMass <= standardMass) {
+                    newAlpha = (float) (alpha0 - Math.abs(Math.sin(time * Math.PI / (2 * oscillationPeriod)))
+                            * Math.exp(-time + oscillationPeriod) * Math.PI / 180);
+                }else{
+                    newAlpha = (float) (-alpha0 + Math.abs(Math.sin(time * Math.PI / (2 * oscillationPeriod)))
+                            * Math.exp(-time + oscillationPeriod) * Math.PI / 180);
                 }
-            }
-
-            newAlpha = (float) (time * endingAngle / 1000 + constant);*/
-
-            if(time <=  oscillationPeriod) {
-                newAlpha = (float) (alpha0 * Math.sin(time * Math.sqrt(EARTH_GRAVITY / (beamWingWidth * 5000))));
-            }else{
-                newAlpha = (float) (alpha0 - Math.abs(Math.sin(time * Math.PI/(2 * oscillationPeriod)))
-                                    * Math.exp(- time + oscillationPeriod) * Math.PI/180);
             }
 
             invalidate();
 
-            if (time <= 3 * oscillationPeriod) {
+            if (time <= 2 * oscillationPeriod) {
 
-                time += 25;
+                time += 100;
 
-                Choreographer choreographer = Choreographer.getInstance();
                 choreographer.postFrameCallback(frameCallback);
 
             } else {
 
-                time = (int) (3 * oscillationPeriod);
+                time = (int) (2 * oscillationPeriod);
                 choreographer.removeFrameCallback(frameCallback);
+                
+                if(balanceListener != null){
+                    balanceListener.sendDifference(standardMass - perfectableMass);
+                }
 
             }
 
@@ -340,6 +344,8 @@ public class WeighBalance extends View {
 
     public void playWeighBalance() {
 
+        perfectableMass = standardMass * standardMass;
+        standardMass += 0.1;
         this.time = 0;
 
         choreographer.postFrameCallback(frameCallback);
@@ -355,5 +361,16 @@ public class WeighBalance extends View {
         time = 1000;
         invalidate();
         choreographer.removeFrameCallback(frameCallback);
+    }
+    
+    protected WeighBalanceListener balanceListener = null;
+    
+    public void setBalanceListener(WeighBalanceListener balanceListener) {
+        this.balanceListener = balanceListener;
+    }
+
+    public interface WeighBalanceListener{
+        
+        void sendDifference(float difference);
     }
 }
