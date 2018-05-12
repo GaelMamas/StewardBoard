@@ -314,13 +314,13 @@ public class WeighBalance extends View {
             if(time <=  oscillationPeriod) {
                 newAlpha = (float) (alpha0 * Math.sin(time * Math.sqrt(EARTH_GRAVITY / (beamWingWidth * 5000))));
             }else{
-                newAlpha = (float) (alpha0 * Math.abs(Math.sin(time * Math.PI/(2 * oscillationPeriod)))
-                                    * Math.exp(-4 * time + oscillationPeriod));
+                newAlpha = (float) (alpha0 - Math.abs(Math.sin(time * Math.PI/(2 * oscillationPeriod)))
+                                    * Math.exp(- time + oscillationPeriod) * Math.PI/180);
             }
 
             invalidate();
 
-            if (time <= oscillationPeriod + 24000) {
+            if (time <= 3 * oscillationPeriod) {
 
                 time += 25;
 
@@ -329,7 +329,7 @@ public class WeighBalance extends View {
 
             } else {
 
-                time = (int) (oscillationPeriod + 24000);
+                time = (int) (3 * oscillationPeriod);
                 choreographer.removeFrameCallback(frameCallback);
 
             }
