@@ -77,7 +77,7 @@ public class WeighBalance extends View {
         this.M1 = new PointF(M0.x + (float) (h0 / Math.tan(alpha0)), M0.y + h0);
         this.M2 = new PointF(M0.x - b1, M0.y + (float) (b1 / Math.tan(beta)));
 
-        this.oscillationPeriod = Math.sqrt(beamWingWidth/EARTH_GRAVITY) * Math.PI/2;
+        this.oscillationPeriod = 5000 * Math.sqrt(beamWingWidth/EARTH_GRAVITY) * Math.PI/2;
 
 
         schemeGround();
@@ -312,15 +312,15 @@ public class WeighBalance extends View {
             newAlpha = (float) (time * endingAngle / 1000 + constant);*/
 
             if(time <=  oscillationPeriod) {
-                newAlpha = (float) (alpha0 * Math.sin(time * Math.sqrt(EARTH_GRAVITY / (beamWingWidth))));
+                newAlpha = (float) (alpha0 * Math.sin(time * Math.sqrt(EARTH_GRAVITY / (beamWingWidth * 5000))));
             }else{
-                newAlpha = (float) (alpha0 * Math.abs(Math.sin(time * Math.sqrt(EARTH_GRAVITY / (beamWingWidth))))
-                                    * Math.exp(2 * time - oscillationPeriod));
+                newAlpha = (float) (alpha0 * Math.abs(Math.sin(time * Math.PI/(2 * oscillationPeriod)))
+                                    * Math.exp(-4 * time + oscillationPeriod));
             }
 
             invalidate();
 
-            if (time <= 10 * oscillationPeriod) {
+            if (time <= oscillationPeriod + 24000) {
 
                 time += 25;
 
@@ -329,7 +329,7 @@ public class WeighBalance extends View {
 
             } else {
 
-                time = (int) (10 * oscillationPeriod);
+                time = (int) (oscillationPeriod + 24000);
                 choreographer.removeFrameCallback(frameCallback);
 
             }
