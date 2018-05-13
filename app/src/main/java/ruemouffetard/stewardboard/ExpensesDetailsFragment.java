@@ -104,7 +104,8 @@ public class ExpensesDetailsFragment extends Fragment {
                 //view.setEnabled(false);
 
                 if(weighBalance != null){
-                    weighBalance.playWeighBalance();
+                    weighBalance.setWeighBalance(new WeighBalance.LoadForBalance(1.00001f, android.R.drawable.ic_menu_call),
+                            new WeighBalance.LoadForBalance(10, android.R.drawable.ic_menu_agenda));
                 }
 
                /* new Handler().postDelayed(new Runnable() {
