@@ -61,12 +61,16 @@
         app:layout_constraintTop_toBottomOf="@+id/text_expense_balance"/>
 
     <!-- TODO START TEST ENTERPRISE STATE -->
-    <ruemouffetard.stewardboard.Widgets.WeighBalance
+    <!--<ruemouffetard.stewardboard.Widgets.WeighBalance
         android:id="@+id/view_enterprise_state"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/text_expense_balance"/>
+        app:layout_constraintTop_toBottomOf="@+id/text_expense_balance"/>-->
+
+    <ruemouffetard.stewardboard.Widgets.NoteStackView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"/>
 
         <!--TODO END TEST -->
 
@@ -76,7 +80,8 @@
         android:layout_marginBottom="2dp"
         android:layout_marginTop="2dp"
         android:background="#000"
-        app:layout_constraintTop_toBottomOf="@+id/view_enterprise_state"/>
+        app:layout_constraintTop_toBottomOf="@+id/view_enterprise_state"
+        tools:ignore="UnknownId"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview_enterprises"
@@ -85,7 +90,8 @@
         android:layout_marginTop="8dp"
         android:background="@color/fourteen_gray"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/view_enterprise_state"/>
+        app:layout_constraintTop_toBottomOf="@+id/view_enterprise_state"
+        tools:ignore="UnknownId"/>
 
     <ProgressBar
         android:id="@+id/progressbar_expense_details"
