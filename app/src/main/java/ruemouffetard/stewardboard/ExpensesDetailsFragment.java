@@ -83,7 +83,7 @@ public class ExpensesDetailsFragment extends Fragment {
 
         mProgressBar = rootView.findViewById(R.id.progressbar_expense_details);
 
-        weighBalance = rootView.findViewById(R.id.view_enterprise_state);
+        //weighBalance = rootView.findViewById(R.id.view_enterprise_state);
 
     }
 

@@ -25,7 +25,7 @@ public class NoteStackView extends View {
     private PointF A, B, C, D, G;
     private double theta;
 
-    private float h0, h, epsilon, b0, b1, cornerRadius;
+    private float h0, h, epsilon, b0, b1;
 
     private int width = 300, height = 300;
 
@@ -59,13 +59,12 @@ public class NoteStackView extends View {
         detailsPaint.setAntiAlias(true);
         detailsPaint.setStrokeWidth(2);
 
-        A = new PointF(2 * width / 5, 3 * height / 5);
+        A = new PointF(2 * width / 5, 4 * height / 5);
 
-        h0 = 50;
+        h0 = 100;
         theta = Math.PI / 4;
-        b0 = 150;
+        b0 = 500;
         b1 = (float) (b0 - 2 * h0 / Math.tan(theta));
-        cornerRadius = 10;
 
         B = new PointF(A.x + (float) (h0 / Math.tan(theta)), A.y - h0);
         C = new PointF(B.x + b1, B.y);
@@ -101,21 +100,36 @@ public class NoteStackView extends View {
 
         canvas.drawPath(noteStackPath, noteStackPaint);
 
+        float thetaInDegrees = (float)Math.toDegrees(theta);
 
-        drawCorner(canvas, A, (float)(360 - theta), (float) theta);
-        drawCorner(canvas, B, 0, (float) (180 - theta));
-        drawCorner(canvas, C, (float) theta, (float) (180 - theta));
-        drawCorner(canvas, D, 180, (float) theta);
+        drawCorner(canvas, A, 360 - thetaInDegrees, thetaInDegrees, 50);
+        drawCorner(canvas, B,0, 180 - thetaInDegrees, 10);
+        drawCorner(canvas, C, thetaInDegrees, 180 - thetaInDegrees, 10);
+        drawCorner(canvas, D, 180, thetaInDegrees, 50);
+
+        drawTextInTheMiddle(canvas, G,"€",0);
+
+        detailsPaint.setStyle(Paint.Style.STROKE);
+        canvas.drawPath(noteStackPath, detailsPaint);
     }
 
-    private void drawCorner(Canvas canvas, PointF M, float startAngle, float spanAngle) {
+    private void drawCorner(Canvas canvas, PointF M, float startAngle, float spanAngle, float cornerRadius) {
 
         cornerNoteRect.left = M.x - cornerRadius;
         cornerNoteRect.top = M.y - cornerRadius;
         cornerNoteRect.right = M.x + cornerRadius;
         cornerNoteRect.bottom = M.y + cornerRadius;
 
-        canvas.drawArc(cornerNoteRect, startAngle, spanAngle, false, detailsPaint);
+        canvas.drawArc(cornerNoteRect, startAngle, spanAngle, true, detailsPaint);
+    }
+
+    private void drawTextInTheMiddle(Canvas canvas, PointF M, String text, float cornerRadius) {
+
+        detailsPaint.setTextSize(40);
+        detailsPaint.setStyle(Paint.Style.FILL);
+
+        canvas.drawText(text, M.x - cornerRadius, M.y - cornerRadius, detailsPaint);
+
     }
 
     @Override
