@@ -9,6 +9,7 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.Choreographer;
 import android.view.View;
 
 /**
@@ -29,7 +30,9 @@ public class NoteStackView extends View {
 
     private int width = 300, height = 300;
 
-    RectF cornerNoteRect = new RectF();
+    private RectF cornerNoteRect = new RectF();
+
+    private Choreographer choreographer = Choreographer.getInstance();
 
     public NoteStackView(Context context) {
         this(context, null);
@@ -63,8 +66,8 @@ public class NoteStackView extends View {
 
         h0 = 100;
         theta = Math.PI / 4;
-        b0 = 500;
-        b1 = (float) (b0 - 2 * h0 / Math.tan(theta));
+        b0 = 4 * h0;
+        b1 = 2 * h0;
 
         B = new PointF(A.x + (float) (h0 / Math.tan(theta)), A.y - h0);
         C = new PointF(B.x + b1, B.y);
@@ -83,15 +86,23 @@ public class NoteStackView extends View {
         epsilon = 5;
         h = 50;
 
-        if(h > epsilon) {
+        /*if(h > epsilon) {
             for (int i = 0; i < h / epsilon; i++) {
 
                 noteStackPath.moveTo(A.x, A.y + (i + 1) * epsilon);
                 noteStackPath.lineTo(D.x, A.y + (i + 1) * epsilon);
 
             }
-        }
+        }*/
 
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+
+        choreographer.postFrameCallback(frameCallback);
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
@@ -100,14 +111,14 @@ public class NoteStackView extends View {
 
         canvas.drawPath(noteStackPath, noteStackPaint);
 
-        float thetaInDegrees = (float)Math.toDegrees(theta);
+        float thetaInDegrees = (float) Math.toDegrees(theta);
 
         drawCorner(canvas, A, 360 - thetaInDegrees, thetaInDegrees, 50);
-        drawCorner(canvas, B,0, 180 - thetaInDegrees, 10);
+        drawCorner(canvas, B, 0, 180 - thetaInDegrees, 10);
         drawCorner(canvas, C, thetaInDegrees, 180 - thetaInDegrees, 10);
         drawCorner(canvas, D, 180, thetaInDegrees, 50);
 
-        drawTextInTheMiddle(canvas, G,"€",0);
+        drawTextInTheMiddle(canvas, G, "€", 0);
 
         detailsPaint.setStyle(Paint.Style.STROKE);
         canvas.drawPath(noteStackPath, detailsPaint);
@@ -132,9 +143,28 @@ public class NoteStackView extends View {
 
     }
 
-    @Override
-    public void invalidate() {
-        init();
-        super.invalidate();
-    }
+    int time = 0;
+
+    Choreographer.FrameCallback frameCallback = new Choreographer.FrameCallback() {
+        @Override
+        public void doFrame(long l) {
+
+            invalidate();
+
+            noteStackPath.moveTo(A.x, A.y + (time/25 + 1) * epsilon);
+            noteStackPath.lineTo(D.x, A.y + (time/25 + 1) * epsilon);
+
+
+            if (time <= 3000) {
+
+                time += 25;
+                choreographer.postFrameCallback(frameCallback);
+
+            } else {
+                choreographer.removeFrameCallback(frameCallback);
+                time = 1000;
+            }
+        }
+    };
+
 }
