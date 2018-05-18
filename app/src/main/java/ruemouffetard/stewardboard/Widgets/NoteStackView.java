@@ -8,7 +8,7 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Choreographer;
 import android.view.View;
@@ -20,6 +20,7 @@ import android.view.View;
 public class NoteStackView extends View {
 
     private final static int HEAVY_STACK_QUOTIENT = 100;
+    private final static int STACK_LAYERS = 10;
 
     private Path noteStackPath;
     private Paint noteStackPaint;
@@ -35,6 +36,10 @@ public class NoteStackView extends View {
     private float h0, epsilon, b0, b1, stackHeight;
 
     private float stackDensity;
+
+    private String currency = "€££";
+    private int ellipseHoriRadius = 50;
+    private int ellipseVertiRadius = 20;
 
     private float stripeWidth1, stripeWidth2, stripeWitdh2;
 
@@ -72,8 +77,8 @@ public class NoteStackView extends View {
 
 
         h0 = 100;
-        theta = Math.PI / 4;
-        b0 = 4 * h0;
+        theta = Math.atan(2);
+        b0 = 3 * h0;
         b1 = 2 * h0;
 
         epsilon = 5;
@@ -102,7 +107,7 @@ public class NoteStackView extends View {
 
     private void initStack(){
 
-        for (int i = 0; i < stackHeight; i++) {
+        for (int i = 0; i < STACK_LAYERS; i++) {
 
             noteStackPath.moveTo(A.x, A.y + (i + 1) * epsilon);
             noteStackPath.lineTo(D.x, A.y + (i + 1) * epsilon);
@@ -128,7 +133,6 @@ public class NoteStackView extends View {
         stackHeight = Math.min(stackHeight, height/3);
 
         initPoints();
-
         initStack();
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -151,13 +155,19 @@ public class NoteStackView extends View {
 
         float thetaInDegrees = (float) Math.toDegrees(theta);
 
-        drawCorner(canvas, A, 360 - thetaInDegrees, thetaInDegrees, 50);
+        drawCorner(canvas, A, 360 - thetaInDegrees, thetaInDegrees, 35);
         drawCorner(canvas, B, 0, 180 - thetaInDegrees, 10);
         drawCorner(canvas, C, thetaInDegrees, 180 - thetaInDegrees, 10);
-        drawCorner(canvas, D, 180, thetaInDegrees, 50);
+        drawCorner(canvas, D, 180, thetaInDegrees, 35);
 
-        drawTextInTheMiddle(canvas, G, "€", 0);
+        cornerNoteRect.set(G.x - ellipseHoriRadius,
+                G.y - ellipseVertiRadius, G.x + ellipseHoriRadius, G.y + ellipseVertiRadius);
 
+        canvas.drawOval(cornerNoteRect, detailsPaint);
+
+        drawTextInTheMiddle(canvas, G, TextUtils.isEmpty(currency)? "": currency.trim().substring(0,1), 13);
+
+        //Draw Border and Layers
         detailsPaint.setStyle(Paint.Style.STROKE);
         canvas.drawPath(noteStackPath, detailsPaint);
     }
@@ -174,10 +184,12 @@ public class NoteStackView extends View {
 
     private void drawTextInTheMiddle(Canvas canvas, PointF M, String text, float cornerRadius) {
 
+        if(TextUtils.isEmpty(text)) return;
+
         detailsPaint.setTextSize(40);
         detailsPaint.setStyle(Paint.Style.FILL);
 
-        canvas.drawText(text, M.x - cornerRadius, M.y - cornerRadius, detailsPaint);
+        canvas.drawText(text, M.x - cornerRadius, M.y + cornerRadius, detailsPaint);
 
     }
 
@@ -193,7 +205,7 @@ public class NoteStackView extends View {
             return Color.BLUE;
         }else if(stackDensity >= 0.2){
             return Color.GRAY;
-        }{
+        }else{
             return Color.BLACK;
         }
 
