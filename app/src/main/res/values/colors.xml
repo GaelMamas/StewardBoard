@@ -6,4 +6,10 @@
     <color name="card_backgroud_white">#FFFFFF</color>
     <color name="nine_gray">#999</color>
     <color name="fourteen_gray">#eee</color>
+
+    <color name="purple_euro_note_color">#FFC94B9A</color>
+    <color name="green_euro_note_color">#FF648319</color>
+    <color name="blue_euro_note_color">#FF9D9EBB</color>
+    <color name="copper_euro_note_color">#FFDC7553</color>
+    <color name="silver_euro_note_color">#FF919193</color>
 </resources>

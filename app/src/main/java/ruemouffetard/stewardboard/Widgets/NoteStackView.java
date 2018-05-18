@@ -1,6 +1,7 @@
 package ruemouffetard.stewardboard.Widgets;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -8,10 +9,14 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Choreographer;
 import android.view.View;
+
+import ruemouffetard.stewardboard.R;
+import ruemouffetard.stewardboard.UsefulMehtod;
 
 /**
  * Created by admin on 14/05/2018.
@@ -21,6 +26,7 @@ public class NoteStackView extends View {
 
     private final static int HEAVY_STACK_QUOTIENT = 100;
     private final static int STACK_LAYERS = 10;
+    private final static int ANIMATION_TIME_MAX = 2000;
 
     private Path noteStackPath;
     private Paint noteStackPaint;
@@ -43,7 +49,7 @@ public class NoteStackView extends View {
 
     private float stripeWidth1, stripeWidth2, stripeWitdh2;
 
-    private RectF cornerNoteRect = new RectF();
+    private RectF usefulRect = new RectF();
 
     private Choreographer choreographer = Choreographer.getInstance();
 
@@ -105,7 +111,7 @@ public class NoteStackView extends View {
 
     }
 
-    private void initStack(){
+    private void initStack() {
 
         for (int i = 0; i < STACK_LAYERS; i++) {
 
@@ -128,9 +134,7 @@ public class NoteStackView extends View {
         width = w;
         height = h;
 
-        stackDensity = stackHeight/HEAVY_STACK_QUOTIENT;
-
-        stackHeight = Math.min(stackHeight, height/3);
+        stackDensity = stackHeight / HEAVY_STACK_QUOTIENT;
 
         initPoints();
         initStack();
@@ -150,6 +154,18 @@ public class NoteStackView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        if (stackDensity < .2) {
+            usefulRect.set(G.x - h0 / 2,
+                    G.y - h0 / 2, G.x + h0 / 2, G.y + h0 / 2);
+
+            Bitmap bitmap = UsefulMehtod.getBitmapFromVectorDrawable(getContext(),
+                    stackDensity >= .01? R.drawable.ic_coins_silver: R.drawable.ic_coins_bronze);
+
+            canvas.drawBitmap(bitmap, null, usefulRect, null);
+
+            return;
+        }
+
         noteStackPaint.setColor(getNoteColor(stackDensity));
         canvas.drawPath(noteStackPath, noteStackPaint);
 
@@ -160,12 +176,12 @@ public class NoteStackView extends View {
         drawCorner(canvas, C, thetaInDegrees, 180 - thetaInDegrees, 10);
         drawCorner(canvas, D, 180, thetaInDegrees, 35);
 
-        cornerNoteRect.set(G.x - ellipseHoriRadius,
+        usefulRect.set(G.x - ellipseHoriRadius,
                 G.y - ellipseVertiRadius, G.x + ellipseHoriRadius, G.y + ellipseVertiRadius);
 
-        canvas.drawOval(cornerNoteRect, detailsPaint);
+        canvas.drawOval(usefulRect, detailsPaint);
 
-        drawTextInTheMiddle(canvas, G, TextUtils.isEmpty(currency)? "": currency.trim().substring(0,1), 13);
+        drawTextInTheMiddle(canvas, G, TextUtils.isEmpty(currency) ? "" : currency.trim().substring(0, 1), 13);
 
         //Draw Border and Layers
         detailsPaint.setStyle(Paint.Style.STROKE);
@@ -174,17 +190,17 @@ public class NoteStackView extends View {
 
     private void drawCorner(Canvas canvas, PointF M, float startAngle, float spanAngle, float cornerRadius) {
 
-        cornerNoteRect.left = M.x - cornerRadius;
-        cornerNoteRect.top = M.y - cornerRadius;
-        cornerNoteRect.right = M.x + cornerRadius;
-        cornerNoteRect.bottom = M.y + cornerRadius;
+        usefulRect.left = M.x - cornerRadius;
+        usefulRect.top = M.y - cornerRadius;
+        usefulRect.right = M.x + cornerRadius;
+        usefulRect.bottom = M.y + cornerRadius;
 
-        canvas.drawArc(cornerNoteRect, startAngle, spanAngle, true, detailsPaint);
+        canvas.drawArc(usefulRect, startAngle, spanAngle, true, detailsPaint);
     }
 
     private void drawTextInTheMiddle(Canvas canvas, PointF M, String text, float cornerRadius) {
 
-        if(TextUtils.isEmpty(text)) return;
+        if (TextUtils.isEmpty(text)) return;
 
         detailsPaint.setTextSize(40);
         detailsPaint.setStyle(Paint.Style.FILL);
@@ -193,21 +209,29 @@ public class NoteStackView extends View {
 
     }
 
-    private int getNoteColor(float stackDensity){
+    private int getNoteColor(float stackDensity) {
 
-        if(stackDensity == 0) return Color.RED;
+        if (stackDensity == 0) return Color.BLACK;
 
-        if(stackDensity >= 1000){
-            return Color.MAGENTA;
-        }else if(stackDensity >= 100){
-            return Color.GREEN;
-        }else if(stackDensity >= 10){
-            return Color.BLUE;
-        }else if(stackDensity >= 0.2){
-            return Color.GRAY;
-        }else{
-            return Color.BLACK;
+        if (stackDensity >= 1000) {
+            return ActivityCompat.getColor(getContext(), R.color.purple_euro_note_color);
+        } else if (stackDensity >= 100) {
+            return ActivityCompat.getColor(getContext(), R.color.green_euro_note_color);
+        } else if (stackDensity >= 10) {
+            return ActivityCompat.getColor(getContext(), R.color.blue_euro_note_color);
+        } else if (stackDensity >= 0.2) {
+            return ActivityCompat.getColor(getContext(), R.color.copper_euro_note_color);
+        } else {
+            return ActivityCompat.getColor(getContext(), R.color.silver_euro_note_color);
         }
+
+
+    }
+
+    public void runStewardShip(float stackHeight) {
+
+        this.stackHeight = stackHeight;
+        choreographer.postFrameCallback(frameCallback);
 
     }
 
@@ -217,22 +241,36 @@ public class NoteStackView extends View {
         @Override
         public void doFrame(long l) {
 
+
             invalidate();
 
-            noteStackPath.moveTo(A.x, A.y + (time / 25 + 1) * epsilon);
-            noteStackPath.lineTo(D.x, A.y + (time / 25 + 1) * epsilon);
+            /*noteStackPath.moveTo(A.x, A.y + (time / 25 + 1) * epsilon);
+            noteStackPath.lineTo(D.x, A.y + (time / 25 + 1) * epsilon);*/
+
+            stackDensity = (-stackHeight * time / ANIMATION_TIME_MAX + stackHeight) / HEAVY_STACK_QUOTIENT;
 
 
-            if (time <= 1000) {
+            if (time >= ANIMATION_TIME_MAX) {
 
-                time += 25;
+                time += 5;
                 choreographer.postFrameCallback(frameCallback);
 
             } else {
                 choreographer.removeFrameCallback(frameCallback);
-                time = 1000;
+                time = ANIMATION_TIME_MAX;
             }
         }
     };
 
+
+    private void pause() {
+        choreographer.removeFrameCallback(frameCallback);
+        time = ANIMATION_TIME_MAX;
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        pause();
+        super.onDetachedFromWindow();
+    }
 }

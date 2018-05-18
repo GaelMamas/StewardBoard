@@ -29,6 +29,7 @@ import ruemouffetard.stewardboard.Model.UsualExpenseItem;
 import ruemouffetard.stewardboard.ViewHolder.BaseViewHolder;
 import ruemouffetard.stewardboard.ViewHolder.EnterpriseCellHolder;
 import ruemouffetard.stewardboard.ViewHolder.ExpensesTableCellHolder;
+import ruemouffetard.stewardboard.Widgets.NoteStackView;
 import ruemouffetard.stewardboard.Widgets.WeighBalance;
 import ruemouffetard.stewardboard.databinding.CellEnterpriseBinding;
 import ruemouffetard.stewardboard.databinding.CellExpensesTableBinding;
@@ -45,6 +46,7 @@ public class ExpensesDetailsFragment extends Fragment {
     private ProgressBar mProgressBar;
 
     private WeighBalance weighBalance;
+    private NoteStackView noteStackView;
 
     public ExpensesDetailsFragment() {
     }
@@ -84,6 +86,7 @@ public class ExpensesDetailsFragment extends Fragment {
         mProgressBar = rootView.findViewById(R.id.progressbar_expense_details);
 
         //weighBalance = rootView.findViewById(R.id.view_enterprise_state);
+        noteStackView = rootView.findViewById(R.id.view_enterprise_state);
 
     }
 
@@ -103,9 +106,13 @@ public class ExpensesDetailsFragment extends Fragment {
                 //mProgressBar.setVisibility(View.VISIBLE);
                 //view.setEnabled(false);
 
-                if(weighBalance != null){
+                /*if(weighBalance != null){
                     weighBalance.setWeighBalance(new WeighBalance.LoadForBalance(1.00001f, android.R.drawable.ic_menu_call),
                             new WeighBalance.LoadForBalance(10, android.R.drawable.ic_menu_agenda));
+                }*/
+
+                if(noteStackView != null){
+                    noteStackView.runStewardShip(0.99f);
                 }
 
                /* new Handler().postDelayed(new Runnable() {
