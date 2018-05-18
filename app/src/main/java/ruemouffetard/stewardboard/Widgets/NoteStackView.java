@@ -8,6 +8,7 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.util.AttributeSet;
 import android.view.Choreographer;
 import android.view.View;
@@ -18,17 +19,24 @@ import android.view.View;
 
 public class NoteStackView extends View {
 
+    private final static int HEAVY_STACK_QUOTIENT = 100;
+
     private Path noteStackPath;
     private Paint noteStackPaint;
 
     private Paint detailsPaint;
 
+    private int width, height;
+
     private PointF A, B, C, D, G;
+
     private double theta;
 
-    private float h0, h, epsilon, b0, b1;
+    private float h0, epsilon, b0, b1, stackHeight;
 
-    private int width = 300, height = 300;
+    private float stackDensity;
+
+    private float stripeWidth1, stripeWidth2, stripeWitdh2;
 
     private RectF cornerNoteRect = new RectF();
 
@@ -62,13 +70,20 @@ public class NoteStackView extends View {
         detailsPaint.setAntiAlias(true);
         detailsPaint.setStrokeWidth(2);
 
-        A = new PointF(2 * width / 5, 4 * height / 5);
 
         h0 = 100;
         theta = Math.PI / 4;
         b0 = 4 * h0;
         b1 = 2 * h0;
 
+        epsilon = 5;
+        stackHeight = 10000;
+
+    }
+
+    private void initPoints() {
+
+        A = new PointF((width - b0) / 2, (height + h0) / 2);
         B = new PointF(A.x + (float) (h0 / Math.tan(theta)), A.y - h0);
         C = new PointF(B.x + b1, B.y);
         D = new PointF(A.x + b0, A.y);
@@ -83,32 +98,55 @@ public class NoteStackView extends View {
         noteStackPath.lineTo(D.x, D.y);
         noteStackPath.lineTo(A.x, A.y);
 
-        epsilon = 5;
-        h = 50;
-
-        /*if(h > epsilon) {
-            for (int i = 0; i < h / epsilon; i++) {
-
-                noteStackPath.moveTo(A.x, A.y + (i + 1) * epsilon);
-                noteStackPath.lineTo(D.x, A.y + (i + 1) * epsilon);
-
-            }
-        }*/
-
     }
+
+    private void initStack(){
+
+        for (int i = 0; i < stackHeight; i++) {
+
+            noteStackPath.moveTo(A.x, A.y + (i + 1) * epsilon);
+            noteStackPath.lineTo(D.x, A.y + (i + 1) * epsilon);
+
+        }
+    }
+
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 
-        choreographer.postFrameCallback(frameCallback);
+        int minw = getPaddingLeft() + getPaddingRight() + getSuggestedMinimumWidth();
+        int w = resolveSizeAndState(minw, widthMeasureSpec, 1);
+
+        int minh = MeasureSpec.getSize(w) + getPaddingBottom() + getPaddingTop();
+        int h = resolveSizeAndState(MeasureSpec.getSize(minh), heightMeasureSpec, 0);
+
+        width = w;
+        height = h;
+
+        stackDensity = stackHeight/HEAVY_STACK_QUOTIENT;
+
+        stackHeight = Math.min(stackHeight, height/3);
+
+        initPoints();
+
+        initStack();
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+
+        //choreographer.postFrameCallback(frameCallback);
+
+        super.onLayout(changed, left, top, right, bottom);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        noteStackPaint.setColor(getNoteColor(stackDensity));
         canvas.drawPath(noteStackPath, noteStackPaint);
 
         float thetaInDegrees = (float) Math.toDegrees(theta);
@@ -143,6 +181,24 @@ public class NoteStackView extends View {
 
     }
 
+    private int getNoteColor(float stackDensity){
+
+        if(stackDensity == 0) return Color.RED;
+
+        if(stackDensity >= 1000){
+            return Color.MAGENTA;
+        }else if(stackDensity >= 100){
+            return Color.GREEN;
+        }else if(stackDensity >= 10){
+            return Color.BLUE;
+        }else if(stackDensity >= 0.2){
+            return Color.GRAY;
+        }{
+            return Color.BLACK;
+        }
+
+    }
+
     int time = 0;
 
     Choreographer.FrameCallback frameCallback = new Choreographer.FrameCallback() {
@@ -151,11 +207,11 @@ public class NoteStackView extends View {
 
             invalidate();
 
-            noteStackPath.moveTo(A.x, A.y + (time/25 + 1) * epsilon);
-            noteStackPath.lineTo(D.x, A.y + (time/25 + 1) * epsilon);
+            noteStackPath.moveTo(A.x, A.y + (time / 25 + 1) * epsilon);
+            noteStackPath.lineTo(D.x, A.y + (time / 25 + 1) * epsilon);
 
 
-            if (time <= 3000) {
+            if (time <= 1000) {
 
                 time += 25;
                 choreographer.postFrameCallback(frameCallback);
